@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../store/hooks';
 import { signupUser } from '../../store/userSlice';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
@@ -8,6 +9,7 @@ import { parse } from 'date-fns';
 
 const Signup: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
 
   const initialValues = {
@@ -150,7 +152,8 @@ const Signup: React.FC = () => {
                 {isSubmitting || status === 'loading' ? 'Signing Up...' : 'Sign Up'}
               </button>
               {status && status.success && (
-                <div className="text-green-500 text-sm mt-4">Signup successful!</div>
+                // <div className="text-green-500 text-sm mt-4">Signup successful!</div>
+                navigate('/otp')
               )}
               {status && !status.success && (
                 <div className="text-red-500 text-sm mt-4">{status.error}</div>
