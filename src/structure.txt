@@ -1,0 +1,60 @@
+Folder PATH listing for volume New Volume
+Volume serial number is 8CEA-8D2E
+G:.
+¦   App.css
+¦   App.tsx
+¦   index.css
+¦   main.tsx
+¦   structure.txt
+¦   vite-env.d.ts
+¦   
++---assets
+¦       react.svg
+¦       
++---components
+¦   +---Admin
+¦           AdminNavbar.tsx
+¦           AdminSidebar.tsx
+¦           
++---config
+¦       firebase.ts
+¦       
++---hooks
++---interfaces
+¦   +---adminInterfaces
+¦   ¦       adminInterface.ts
+¦   ¦       adminStoreInterface.ts
+¦   ¦       
+¦   +---userInterfaces
+¦           apiInterfaces.ts
+¦           storeInterfaces.ts
+¦           
++---pages
+¦   +---admin
+¦   ¦       AdminDashboard.tsx
+¦   ¦       AdminLogin.tsx
+¦   ¦       
+¦   +---user
+¦           Home.tsx
+¦           Login.tsx
+¦           Otp.tsx
+¦           Signup.tsx
+¦           
++---services
+¦   +---adminServices
+¦   ¦       adminService.ts
+¦   ¦       
+¦   +---userServices
+¦           api.ts
+¦           
++---Slices
+¦   +---adminSlice
+¦   ¦       adminSlice.ts
+¦   ¦       
+¦   +---userSlice
+¦           userSlice.ts
+¦           
++---store
+        hooks.ts
+        index.ts
+        

@@ -1,13 +1,27 @@
+
 import React, { useState, useEffect, ChangeEvent, KeyboardEvent, ClipboardEvent } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useAppDispatch } from '../../store/hooks';
+import { verifyOtp } from '../../Slices/userSlice/userSlice';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+interface LocationState {
+  email: string;
+}
 
 const OtpPage: React.FC = () => {
+
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
 
   const initialValues = {
     otp: ''
   };
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as LocationState;
+  const email = state?.email;
 
   const validationSchema = Yup.object({
     otp: Yup.string()
@@ -24,7 +38,6 @@ const OtpPage: React.FC = () => {
       setOtp(newOtp);
       setFieldValue('otp', newOtp.join(''));
 
-      // Focus next input box
       if (index < 3 && e.target.nextElementSibling instanceof HTMLInputElement) {
         e.target.nextElementSibling.focus();
       }
@@ -61,9 +74,19 @@ const OtpPage: React.FC = () => {
     });
   }, []);
 
+  const handleSubmit = async (otp: string) => {
+    try {
+      const response = await dispatch(verifyOtp({ email, otp })).unwrap();
+      console.log(response);
+      navigate('/login'); 
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+
   return (
-    <div className="relative font-inter antialiased">
-      <main className="relative min-h-screen flex flex-col justify-center bg-slate-50 overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100" style={{ backgroundImage: "url('https://pro-theme.com/html/teamhost/assets/img/heading8.jpg')" }}>
+      {/* <main className="relative min-h-screen flex flex-col justify-center bg-slate-50 overflow-hidden"> */}
         <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-24">
           <div className="flex justify-center">
             <div className="w-5/6 text-center bg-white px-4 sm:px-8 py-10 rounded-xl shadow">
@@ -76,10 +99,8 @@ const OtpPage: React.FC = () => {
               <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={(values, { setSubmitting }) => {
-                  // Submit OTP for verification
-                //   console.log(values.otp);
-                  setSubmitting(false);
+                onSubmit={(values) => {
+                  handleSubmit(values.otp)
                 }}
               >
                 {({ isSubmitting, setFieldValue }) => (
@@ -121,8 +142,8 @@ const OtpPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      {/* </main> */}
+     </div>
   );
 };
 
