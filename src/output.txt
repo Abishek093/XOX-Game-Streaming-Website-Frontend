@@ -5,7 +5,7 @@ G:.
 ¦   App.tsx
 ¦   index.css
 ¦   main.tsx
-¦   structure.txt
+¦   output.txt
 ¦   vite-env.d.ts
 ¦   
 +---assets
@@ -13,9 +13,25 @@ G:.
 ¦       
 +---components
 ¦   +---Admin
-¦           AdminNavbar.tsx
-¦           AdminSidebar.tsx
-¦           
+¦   ¦       AdminNavbar.tsx
+¦   ¦       AdminSidebar.tsx
+¦   ¦       
+¦   +---User
+¦       +---home
+¦       ¦       Communities.tsx
+¦       ¦       CommunityCard.tsx
+¦       ¦       NewsArchive.tsx
+¦       ¦       RecommendedEvents.tsx
+¦       ¦       
+¦       +---profile
+¦       ¦       PostFeed.tsx
+¦       ¦       UserProfileCard.tsx
+¦       ¦       UserTitleCard.tsx
+¦       ¦       
+¦       +---utils
+¦               UserNavbar.tsx
+¦               UserSidebar.tsx
+¦               
 +---config
 ¦       firebase.ts
 ¦       
@@ -38,7 +54,15 @@ G:.
 ¦           Home.tsx
 ¦           Login.tsx
 ¦           Otp.tsx
+¦           Profile.tsx
 ¦           Signup.tsx
+¦           
++---routes
+¦   +---AdminRoutes
+¦   ¦       AdminRoutes.tsx
+¦   ¦       
+¦   +---UserRoutes
+¦           UserRoutes.tsx
 ¦           
 +---services
 ¦   +---adminServices
@@ -46,6 +70,7 @@ G:.
 ¦   ¦       
 ¦   +---userServices
 ¦           api.ts
+¦           axiosInstance.ts
 ¦           
 +---Slices
 ¦   +---adminSlice

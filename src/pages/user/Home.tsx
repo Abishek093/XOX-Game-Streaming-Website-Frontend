@@ -1,36 +1,23 @@
-import React, { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { useNavigate } from 'react-router-dom';
-import { clearUser, selectUser } from '../../Slices/userSlice/userSlice';
-import Cookies from 'js-cookie';
+import React from 'react';
+import Sidebar from '../../components/User/common/UserSidebar';
+import Navbar from '../../components/User/common/UserNavbar';
+import RecommendedEvents from '../../components/User/home/RecommendedEvents';
+import NewsArchive from '../../components/User/home/NewsArchive';
+import Communities from '../../components/User/home/Communities';
 
 const Home: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const user = useAppSelector(selectUser);
-
-  useEffect(() => {
-    const token = Cookies.get('accessToken');
-    if (!token && !user) {
-      navigate('/login');
-    }
-  }, [navigate]);
-
-  const handleLogout = () => {
-    dispatch(clearUser());
-    navigate('/login');
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4">Welcome, {user?.user?.username || 'User'}!</h2>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-        >
-          Logout
-        </button>
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Navbar />
+        <div className="p-4 bg-gray-100 flex-1 p-12">
+          <div className="flex mb-24 space-x-4">
+            <RecommendedEvents />
+            <NewsArchive />
+          </div>
+          <Communities />
+        </div>
       </div>
     </div>
   );

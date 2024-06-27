@@ -1,0 +1,160 @@
+//App.tsx before spliting the routes
+
+// import React from 'react';
+// import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+// import { useSelector } from 'react-redux';
+// import { selectUser } from './Slices/userSlice/userSlice';
+// import Signup from './pages/user/Signup';
+// import OtpPage from './pages/user/Otp';
+// import LoginPage from './pages/user/Login';
+// import Home from './pages/user/Home';
+// import AdminLogin from './pages/admin/AdminLogin'
+// import AdminDashboard from './pages/admin/AdminDashboard';
+// // import AdminNavbar from './components/Admin/AdminNavbar'
+// // import AdminSidebar from './components/Admin/AdminSidebar'
+// // import Cookies from 'js-cookie';
+
+
+// const PrivateRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
+//   const user = useSelector(selectUser);
+//   const isAuthenticated = !!user?.user;
+//   const location = useLocation();
+
+//   return isAuthenticated ? (
+//     <>{element}</>
+//   ) : (
+//     <Navigate to="/login" state={{ from: location }} replace />
+//   );
+// };
+
+// const PublicRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
+//   const user = useSelector(selectUser);
+//   const isAuthenticated = !!user?.user;
+
+//   return isAuthenticated ? <Navigate to="/home" replace /> : <>{element}</>;
+// };
+
+// // const PrivateAdminRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
+// //   const user = useSelector(selectUser);
+// //   const isAuthenticated = !!user?.admin;
+// //   const location = useLocation();
+
+// //   return isAuthenticated ? (
+// //     <>{element}</>
+// //   ) : (
+// //     <Navigate to="/admin/login" state={{ from: location }} replace />
+// //   );
+// // };
+
+// // const PublicAdminRoute: React.FC<{ element: React.ReactNode }> = ({ element }) => {
+// //   const user = useSelector(selectUser);
+// //   const isAuthenticated = !!user?.admin;
+
+// //   return isAuthenticated ? <Navigate to="/admin/dashboard" replace /> : <>{element}</>;
+// // };
+
+// const App: React.FC = () => {
+//   return (
+//     <Router>
+//       <Routes>
+//         <Route path="/signup" element={<PublicRoute element={<Signup />} />} />
+//         <Route path="/otp" element={<PublicRoute element={<OtpPage />} />} />
+//         <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
+//         <Route path="/home" element={<PrivateRoute element={<Home />} />} />
+//         <Route path="/admin/login" element={<AdminLogin />} />
+//         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+//       </Routes>
+//     </Router>
+//   );
+// };
+
+// export default App;
+
+
+
+
+
+
+
+import React from 'react';
+import { FaHome, FaUser, FaComments, FaUserFriends, FaWallet, FaNewspaper, FaUsers, FaStream, FaRegFileAlt, FaQuestionCircle } from 'react-icons/fa';
+
+const Sidebar = () => {
+  return (
+    <div className="bg-[#ffff] text-gray-900 w-64 h-screen flex flex-col p-4 drop-shadow-md sticky top-0">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-orange-500">XOX</h1>
+      </div>
+      <div className="flex-1">
+        <ul>
+          <li className="mb-10"><FaHome className="inline-block mr-2" />Home</li>
+          <li className="mb-10">ACCOUNT</li>
+          <li className="mb-6"><FaUser className="inline-block mr-2" />Profile</li>
+          <li className="mb-6"><FaComments className="inline-block mr-2" />Chats</li>
+          <li className="mb-6"><FaUserFriends className="inline-block mr-2" />Friends</li>
+          <li className="mb-10"><FaWallet className="inline-block mr-2" />Wallet</li>
+          <li className="mb-10">MAIN</li>
+          <li className="mb-6"><FaNewspaper className="inline-block mr-2" />News</li>
+          <li className="mb-6"><FaUsers className="inline-block mr-2" />Community</li>
+          <li className="mb-6"><FaUserFriends className="inline-block mr-2" />Members</li>
+          <li className="mb-10"><FaStream className="inline-block mr-2" />Streams</li>
+          <li className="mb-10">ACCOUNT</li>
+          <li className="mb-6"><FaRegFileAlt className="inline-block mr-2" />Report</li>
+          <li className="mb-6"><FaQuestionCircle className="inline-block mr-2" />Help</li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default Sidebar;
+
+
+
+
+
+
+//Home page before changing to components
+
+
+
+// import React, { useEffect } from 'react';
+// import { useAppDispatch, useAppSelector } from '../../store/hooks';
+// import { useNavigate } from 'react-router-dom';
+// import { clearUser, selectUser } from '../../Slices/userSlice/userSlice';
+// import Cookies from 'js-cookie';
+
+// const Home: React.FC = () => {
+//   const dispatch = useAppDispatch();
+//   const navigate = useNavigate();
+//   const user = useAppSelector(selectUser);
+
+//   useEffect(() => {
+//     const token = Cookies.get('accessToken');
+//     if (!token && !user) {
+//       navigate('/login');
+//     }
+//   }, [navigate]);
+
+//   const handleLogout = () => {
+//     dispatch(clearUser());
+//     navigate('/login');
+//   };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gray-100">
+//       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+//         <h2 className="text-2xl font-bold mb-4">Welcome, {user?.user?.username || 'User'}!</h2>
+//         <button
+//           onClick={handleLogout}
+//           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+//         >
+//           Logout
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Home;
