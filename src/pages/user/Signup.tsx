@@ -5,9 +5,10 @@ import { signupUser, googleSignup, selectStatus, selectError } from '../../Slice
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
-import { parse } from 'date-fns';
+// import { parse } from 'date-fns';
 import { auth, googleProvider } from "../../config/firebase";
 import { signInWithPopup } from "firebase/auth";
+import { parse, isDate, subYears } from 'date-fns';
 
 const Signup: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -43,6 +44,7 @@ const Signup: React.FC = () => {
       .typeError("Please enter a valid date")
       .required("Birth Date is required")
       .min(new Date(1969, 10, 13), "Date is too early")
+      .max(subYears(new Date(), 13), "You must be at least 13 years old")
   });
 
   const handleSubmit = (values: typeof initialValues, { setSubmitting, setStatus }: any) => {
@@ -97,12 +99,16 @@ const Signup: React.FC = () => {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting, status, setFieldValue, values }) => {
+            // useEffect(() => {
+            //   if (status?.success) {
+            //     navigate('/otp', { state: { email: values.email } });
+            //   }
+            // }, [status, navigate]);
             useEffect(() => {
               if (status?.success) {
-                navigate('/otp', { state: { email: values.email } });
+                navigate('/otp', { state: { email: values.email, isSignup: true } });
               }
             }, [status, navigate]);
-
             return (
               <Form>
                 <div className="mb-4">

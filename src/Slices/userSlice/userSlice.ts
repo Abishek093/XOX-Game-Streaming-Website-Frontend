@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { signup, verifyOtpApi, login, googleSignupService,googleLoginService } from '../../services/userServices/api';
-import { LoginPayload, UserData, VerifyOtpPayload, VerifyOtpResponse, LoginResponse, GoogleUser, AuthenticatedUser } from '../../interfaces/userInterfaces/apiInterfaces';
+import { signup, verifyOtpApi, UpdatePasswordApi, login, googleSignupService,googleLoginService, updateUserApi, confirmMailApi, verifyResetOtpApi } from '../../services/userServices/api';
+import { LoginPayload, UserData, VerifyOtpPayload, VerifyOtpResponse, LoginResponse, GoogleUser, AuthenticatedUser, UpdateUser, UpdateUserResponse, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse} from '../../interfaces/userInterfaces/apiInterfaces';
 import { UserState } from '../../interfaces/userInterfaces/storeInterfaces';
 import Cookies from 'js-cookie';
 
@@ -10,6 +10,7 @@ const initialState: UserState = {
   error: null,
   otpStatus: 'idle',
   otpError: null,
+  email: null
 };
 
 export const signupUser = createAsyncThunk<UserData, UserData>(
@@ -103,6 +104,46 @@ export const googleLogin = createAsyncThunk<AuthenticatedUser, GoogleUser>(
   }
 );
 
+
+export const updateUser = createAsyncThunk<UpdateUserResponse, UpdateUser>(
+  'user/updateUser',
+  async (updateDetails, { rejectWithValue }) => {
+    try {
+      console.log("updateDetails001",updateDetails);
+      
+      const response = await updateUserApi(updateDetails.userId, updateDetails);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const confirmMail = createAsyncThunk<ConfirmMailResponse, ConfirmMailRequest>(
+  'user/confirmMail',
+  async (emailRequest, { rejectWithValue }) => {
+    try {
+      const response = await confirmMailApi(emailRequest);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk<UpdatePasswordResponse, UpdatePasswordRequest>(
+  'user/updatePassword',
+  async (newPasswordDetails, { rejectWithValue }) => {
+    console.log(newPasswordDetails,"userSlice")
+    try {
+      const response = await UpdatePasswordApi(newPasswordDetails);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const clearUser = createAsyncThunk<void, void>(
   'user/clearUser',
   async (_, { dispatch }) => {
@@ -111,6 +152,17 @@ export const clearUser = createAsyncThunk<void, void>(
     Cookies.remove('refreshToken');  }
 );
 
+export const verifyResetOtp = createAsyncThunk<verifyResetOtpResponse, VerifyOtpPayload>(
+  'user/verifyResetOtp',
+  async (otpDetails, { rejectWithValue }) => {
+    try {
+      const response = await verifyResetOtpApi(otpDetails);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 
 export const userSlice = createSlice({
@@ -123,6 +175,7 @@ export const userSlice = createSlice({
       state.error = null;
       state.otpStatus = 'idle';
       state.otpError = null;
+      state.email = null;
     },
   },
   extraReducers: (builder) => {
@@ -194,8 +247,57 @@ export const userSlice = createSlice({
       .addCase(googleLogin.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string || 'Google login failed';
-      });
+      })
 
+      .addCase(updateUser.pending, (state)=>{
+        state.status = 'loading'
+        state.error = null
+      })
+
+      .addCase(updateUser.fulfilled, (state, action: PayloadAction<UpdateUserResponse>) => {
+        state.status = 'idle';
+        state.user = action.payload.user; 
+        state.error = null;
+      })
+
+      .addCase(updateUser.rejected, (state, action)=>{
+        state.status = 'failed'
+        state.error = action.payload as string || "User profile updation failed"
+      })
+
+      //confirm email
+      .addCase(confirmMail.fulfilled, (state, action: PayloadAction<ConfirmMailResponse>) => {
+        state.status = 'idle';
+        state.error = null;
+        state.email = action.payload.email; 
+      })
+      .addCase(confirmMail.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string || 'Email confirmation failed';
+      })
+
+      .addCase(verifyResetOtp.fulfilled, (state, action: PayloadAction<verifyResetOtpResponse>) => {
+        state.otpStatus = 'succeeded';
+        state.otpError = null;
+        state.email = action.payload.email; 
+      })
+      .addCase(verifyResetOtp.rejected, (state, action) => {
+        state.otpStatus = 'failed';
+        state.otpError = action.payload as string || 'Failed to verify OTP';
+      })
+
+      //update password
+      .addCase(updatePassword.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updatePassword.fulfilled, (state, action: PayloadAction<UpdatePasswordResponse>) => {
+        state.status = 'idle';
+        state.error = null;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      });
   },
 });
 

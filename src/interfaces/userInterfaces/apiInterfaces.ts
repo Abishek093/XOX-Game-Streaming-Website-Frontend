@@ -8,6 +8,12 @@ export interface VerifyOtpPayload {
     message: string;
   }
   
+  export interface verifyResetOtpResponse {
+    success: boolean;
+    message: string;
+    email: string
+  }
+
   export interface LoginPayload {
     email: string;
     password: string;
@@ -55,4 +61,48 @@ export interface VerifyOtpPayload {
   export interface RefreshTokenResponse{
     accessToken: string;
     refreshToken: string;
+  }
+
+  export interface UpdateUser {
+    userId: string;
+    userName: string;
+    displayName: string;
+    bio: string;
+  }
+
+  export interface UpdateUserResponse {
+    user: NonSensitiveUserProps;
+  }
+
+  export interface NonSensitiveUserProps {
+    userId: string;
+    email: string;
+    userName: string;
+    displayName?: string;
+    profileImage: string;
+    titleImage?: string;
+    bio?: string;
+    followers: string[];
+    following: string[];
+    dateOfBirth: Date;
+  }
+
+  export interface ConfirmMailRequest {
+    email: string;
+  }
+  
+  export interface ConfirmMailResponse {
+    success: boolean;
+    message: string;
+    email: string;
+  }
+
+  export interface UpdatePasswordRequest {
+    newPassword: string
+    email: string
+  }
+  
+  export interface UpdatePasswordResponse {
+    success: boolean;
+    message: string;
   }

@@ -40,7 +40,7 @@ import UserProfileCard from '../../components/User/profile/UserProfileCard';
 import PostFeed from '../../components/User/common/PostFeed';
 import ProfileTabs from '../../components/User/profile/ProfileTabs';
 import FriendsCard from '../../components/User/profile/FriendsCard';
-import InfoComponent from './InfoComponent';
+import InfoComponent from '../../components/User/profile/InfoComponent';
 
 type Tab = 'posts' | 'info' | 'friends' | 'groups';
 

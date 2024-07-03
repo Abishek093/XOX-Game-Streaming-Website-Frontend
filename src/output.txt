@@ -83,3 +83,93 @@ G:.
         hooks.ts
         index.ts
         
+Folder PATH listing for volume New Volume
+Volume serial number is 8CEA-8D2E
+G:.
+|   App.css
+|   App.tsx
+|   index.css
+|   main.tsx
+|   output.txt
+|   vite-env.d.ts
+|   
++---assets
+|       react.svg
+|       
++---components
+|   +---Admin
+|   |       AdminNavbar.tsx
+|   |       AdminSidebar.tsx
+|   |       
+|   \---User
+|       +---common
+|       |       PostFeed.tsx
+|       |       UserNavbar.tsx
+|       |       UserSidebar.tsx
+|       |       
+|       +---home
+|       |       Communities.tsx
+|       |       CommunityCard.tsx
+|       |       NewsArchive.tsx
+|       |       RecommendedEvents.tsx
+|       |       
+|       \---profile
+|               FriendsCard.tsx
+|               InfoComponent.tsx
+|               ProfileTabs.tsx
+|               UserProfileCard.tsx
+|               UserTitleCard.tsx
+|               
++---config
+|       firebase.ts
+|       
++---hooks
++---interfaces
+|   +---adminInterfaces
+|   |       adminInterface.ts
+|   |       adminStoreInterface.ts
+|   |       
+|   \---userInterfaces
+|           apiInterfaces.ts
+|           storeInterfaces.ts
+|           
++---pages
+|   +---admin
+|   |       AdminDashboard.tsx
+|   |       AdminLogin.tsx
+|   |       
+|   \---user
+|           ConfirmMail.tsx
+|           ConfirmPassword.tsx
+|           Home.tsx
+|           Login.tsx
+|           Otp.tsx
+|           Profile.tsx
+|           Signup.tsx
+|           
++---routes
+|   +---AdminRoutes
+|   |       AdminRoutes.tsx
+|   |       
+|   \---UserRoutes
+|           UserRoutes.tsx
+|           
++---services
+|   +---adminServices
+|   |       adminService.ts
+|   |       
+|   \---userServices
+|           api.ts
+|           axiosInstance.ts
+|           
++---Slices
+|   +---adminSlice
+|   |       adminSlice.ts
+|   |       
+|   \---userSlice
+|           userSlice.ts
+|           
+\---store
+        hooks.ts
+        index.ts
+        

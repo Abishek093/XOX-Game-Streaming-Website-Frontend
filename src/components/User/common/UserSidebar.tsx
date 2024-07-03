@@ -24,7 +24,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="bg-[#ffff] text-gray-900 w-64 h-full flex flex-col p-2 drop-shadow-md sticky top-0">
+    <div className="bg-[#ffff] text-gray-900 w-64 h-full flex flex-col p-2 drop-shadow-md sticky top-0 fixed">
       <div className="mb-12 drop-shadow-md">
         <h1 className="text-2xl font-bold text-orange-500 px-4 py-2">XOX</h1>
       </div>

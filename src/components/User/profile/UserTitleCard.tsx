@@ -25,7 +25,7 @@ const UserTitleCard: React.FC = () => {
             alt="Profile"
           />
         </div>
-        <h1 className="uk-page-heading-style-a uk-page-heading-h text-white text-xl font-bold">
+        <h1 className="uk-page-heading-style-a uk-page-heading-h text-white text-xl font-bold z-10">
           {user?.user?.username || 'User'}
         </h1>
         <p className="text-white text-base">

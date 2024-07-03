@@ -6,6 +6,7 @@ export interface UserState {
   error: string | null;
   otpStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
   otpError: string | null;
+  email: string | null;
 }
 
 // export interface GoogleUser{

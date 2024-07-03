@@ -129,8 +129,11 @@ const Login: React.FC = () => {
             Login with Google
           </button>
           <p className="text-sm font-light text-gray-500 dark:text-gray-400 pt-5">
-                  Don’t have an account yet? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => navigate('/signup')}>Sign up</a>
-                </p>
+            Don’t have an account yet? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => navigate('/signup')}>Sign up</a>
+          </p>
+          <p className="text-sm font-light text-gray-500 dark:text-gray-400 pt-2">
+           <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => navigate('/confirm-mail')}> Forget Password?</a>
+          </p>        
           
         </div>
       </div>
