@@ -26,13 +26,21 @@ export interface VerifyOtpPayload {
   }
 
   export interface UserData {
+    id: string;
     userName: string;
     displayName: string;
     email: string;
     password: string;
     birthDate: string;
   }
-  
+  export interface UserApiData {
+    userName: string;
+    displayName: string;
+    email: string;
+    password: string;
+    birthDate: string;
+  }
+
   export interface GoogleUser {
     userId: string;
     userName: string;

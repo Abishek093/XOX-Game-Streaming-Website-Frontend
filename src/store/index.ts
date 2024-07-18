@@ -1,35 +1,42 @@
-// import { configureStore } from '@reduxjs/toolkit';
-// import userReducer from './userSlice';
-
-// export const store = configureStore({
-//   reducer: {
-//     user: userReducer,
-//   },
-// });
-
-// export type RootState = ReturnType<typeof store.getState>;
-// export type AppDispatch = typeof store.dispatch;
-// store/index.ts
-
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { combineReducers } from 'redux';
 import userReducer from '../Slices/userSlice/userSlice';
+import adminReducer from '../Slices/adminSlice/adminSlice';
 
-const persistConfig = {
-  key: 'root',
+const userPersistConfig = {
+  key: 'user',
   storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, userReducer);
+const adminPersistConfig = {
+  key: 'admin',
+  storage,
+};
 
-export const store = configureStore({
-  reducer: {
-    user: persistedReducer,
-  },
+const persistedAuthReducer = persistReducer(userPersistConfig, userReducer);
+const persistedAdminReducer = persistReducer(adminPersistConfig, adminReducer);
+
+const rootReducer = combineReducers({
+  auth: persistedAuthReducer,
+  admin: persistedAdminReducer,
 });
 
-export const persistor = persistStore(store);
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    }),
+});
 
-export type RootState = ReturnType<typeof store.getState>;
+const persistor = persistStore(store);
+
+export { store, persistor };
+
+
 export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;

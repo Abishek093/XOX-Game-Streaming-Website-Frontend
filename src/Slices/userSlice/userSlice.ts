@@ -1,8 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { signup, verifyOtpApi, UpdatePasswordApi, login, googleSignupService,googleLoginService, updateUserApi, confirmMailApi, verifyResetOtpApi } from '../../services/userServices/api';
-import { LoginPayload, UserData, VerifyOtpPayload, VerifyOtpResponse, LoginResponse, GoogleUser, AuthenticatedUser, UpdateUser, UpdateUserResponse, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse} from '../../interfaces/userInterfaces/apiInterfaces';
+import { signup, verifyOtpApi, UpdatePasswordApi, login, 
+  // googleSignupService,googleLoginService, 
+  googleAuthApi,
+  updateUserApi, confirmMailApi, verifyResetOtpApi } from '../../services/userServices/api';
+import { LoginPayload,UserApiData, UserData, VerifyOtpPayload, VerifyOtpResponse, LoginResponse, GoogleUser, AuthenticatedUser, UpdateUser, UpdateUserResponse, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse} from '../../interfaces/userInterfaces/apiInterfaces';
 import { UserState } from '../../interfaces/userInterfaces/storeInterfaces';
 import Cookies from 'js-cookie';
+import { RootState } from '../../store';
 
 const initialState: UserState = {
   user: null,
@@ -13,14 +17,15 @@ const initialState: UserState = {
   email: null
 };
 
-export const signupUser = createAsyncThunk<UserData, UserData>(
+export const signupUser = createAsyncThunk<UserData, UserApiData>(
   'user/signupUser',
   async (userDetails, { rejectWithValue }) => {
     try {
       const response = await signup(userDetails);
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      
+      return rejectWithValue(error);
     }
   }
 );
@@ -37,72 +42,47 @@ export const verifyOtp = createAsyncThunk<VerifyOtpResponse, VerifyOtpPayload>(
   }
 );
 
-export const loginUser = createAsyncThunk<LoginResponse, LoginPayload>(
+export const loginUser = createAsyncThunk<LoginResponse, LoginPayload, { rejectValue: { message: string } }>(
   'user/loginUser',
   async (loginDetails, { rejectWithValue }) => {
     try {
       const response = await login(loginDetails);
-      // localStorage.setItem('token', response.token);
-      Cookies.set('refreshToken', response.refreshToken,{
+      Cookies.set('UserRefreshToken', response.refreshToken, {
         sameSite: 'strict',
-        expires: 1/96
+        expires: 7,
       });
-
-      Cookies.set('accessToken', response.accessToken,{
+      Cookies.set('UserAccessToken', response.accessToken, {
         sameSite: 'strict',
-        expires: 7
+        expires: 1 / 96, 
       });
-
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message ? { message: error.message } : { message: 'Failed to login' });
     }
   }
 );
 
-export const googleSignup = createAsyncThunk<AuthenticatedUser, GoogleUser>(
-  'user/googleSignup',
-  async (googleSignupDetails, { rejectWithValue }) => {
-    try {
-      const response = await googleSignupService(googleSignupDetails);
-      // localStorage.setItem('token', response.token); 
-      Cookies.set('refreshToken', response.refreshToken,{
-        sameSite: 'strict',
-        expires: 1/96
-      });
 
-      Cookies.set('accessToken', response.accessToken,{
+export const googleAuth = createAsyncThunk<AuthenticatedUser, GoogleUser>(
+  'user/googleAuth',
+  async (googleAuthDetails, { rejectWithValue }) => {
+    try {
+      const response = await googleAuthApi(googleAuthDetails);
+      Cookies.set('UserRefreshToken', response.refreshToken, {
         sameSite: 'strict',
-        expires: 7
+        expires: 7, // 7 days
+      });
+      Cookies.set('UserAccessToken', response.accessToken, {
+        sameSite: 'strict',
+        expires: 1 / 96, // 15 minutes
       });
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message)
-    }
-  }
-)
-
-export const googleLogin = createAsyncThunk<AuthenticatedUser, GoogleUser>(
-  'user/googleLogin',
-  async (googleLoginDetails, { rejectWithValue }) => {
-    try {
-      const response = await googleLoginService(googleLoginDetails);
-      // localStorage.setItem('token', response.token);
-      Cookies.set('refreshToken', response.refreshToken,{
-        sameSite: 'strict',
-        expires: 1/96
-      });
-
-      Cookies.set('accessToken', response.accessToken,{
-        sameSite: 'strict',
-        expires: 7
-      });
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message ? { message: error.message } : { message: 'Failed to login' });
     }
   }
 );
+
 
 
 export const updateUser = createAsyncThunk<UpdateUserResponse, UpdateUser>(
@@ -126,7 +106,9 @@ export const confirmMail = createAsyncThunk<ConfirmMailResponse, ConfirmMailRequ
       const response = await confirmMailApi(emailRequest);
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      console.log("Error", error);
+      console.log("Error message", error.message);
+      return rejectWithValue(error? { message: error } : { message: 'Failed to verify email' })
     }
   }
 );
@@ -148,8 +130,8 @@ export const clearUser = createAsyncThunk<void, void>(
   'user/clearUser',
   async (_, { dispatch }) => {
     dispatch(logout());
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');  }
+    Cookies.remove('UserAccessToken');
+    Cookies.remove('UserRefreshToken');  }
 );
 
 export const verifyResetOtp = createAsyncThunk<verifyResetOtpResponse, VerifyOtpPayload>(
@@ -159,7 +141,8 @@ export const verifyResetOtp = createAsyncThunk<verifyResetOtpResponse, VerifyOtp
       const response = await verifyResetOtpApi(otpDetails);
       return response;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      console.log("Error in verify otp",error);
+      return rejectWithValue(error);
     }
   }
 );
@@ -191,7 +174,7 @@ export const userSlice = createSlice({
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string || 'Signup failed';
+        state.error = action.payload as any || 'Signup failed';
       })
       // Handle OTP verification actions
       .addCase(verifyOtp.pending, (state) => {
@@ -218,35 +201,21 @@ export const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string || 'Login failed';
+        state.error = action.payload as any || 'Login failed';
       })
       // Handle Google signup actions
-      .addCase(googleSignup.pending, (state) => {
+      .addCase(googleAuth.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(googleSignup.fulfilled, (state, action: PayloadAction<AuthenticatedUser>) => {
+      .addCase(googleAuth.fulfilled, (state, action: PayloadAction<AuthenticatedUser>) => {
         state.status = 'idle';
         state.user = action.payload.user;
         state.error = null;
       })
-      .addCase(googleSignup.rejected, (state, action) => {
+      .addCase(googleAuth.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string || 'Google signup failed';
-      })
-
-      .addCase(googleLogin.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(googleLogin.fulfilled, (state, action: PayloadAction<AuthenticatedUser>) => {
-        state.status = 'idle';
-        state.user = action.payload.user;
-        state.error = null;
-      })
-      .addCase(googleLogin.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string || 'Google login failed';
       })
 
       .addCase(updateUser.pending, (state)=>{
@@ -303,10 +272,15 @@ export const userSlice = createSlice({
 
 export const { logout } = userSlice.actions;
 
-export const selectUser = (state: { user: UserState }) => state.user;
-export const selectStatus = (state: { user: UserState }) => state.user.status;
-export const selectError = (state: { user: UserState }) => state.user.error;
-export const selectOtpStatus = (state: { user: UserState }) => state.user.otpStatus;
-export const selectOtpError = (state: { user: UserState }) => state.user.otpError;
+// export const selectUser = (state: { user: UserState }) => state.auth.user;
+// export const selectStatus = (state: { user: UserState }) => state.user.status;
+// export const selectError = (state: { user: UserState }) => state.user.error;
+// export const selectOtpStatus = (state: { user: UserState }) => state.user.otpStatus;
+// export const selectOtpError = (state: { user: UserState }) => state.user.otpError;
+export const selectUser = (state: RootState) => state.auth.user;
+export const selectStatus = (state: RootState) => state.auth.status;
+export const selectError = (state: RootState) => state.auth.error;
+export const selectOtpStatus = (state: RootState) => state.auth.otpStatus;
+export const selectOtpError = (state: RootState) => state.auth.otpError;
 
 export default userSlice.reducer;

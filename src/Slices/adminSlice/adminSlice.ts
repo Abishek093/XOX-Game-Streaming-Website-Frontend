@@ -3,6 +3,7 @@ import { AdminLoginPayload, AdminLoginResponse } from '../../interfaces/adminInt
 import { adminLogin } from '../../services/adminServices/adminService';
 import { AdminState } from '../../interfaces/adminInterfaces/adminStoreInterface'
 import Cookies from 'js-cookie';
+import { RootState } from '../../store';
 
 const initialState: AdminState = {
   admin: null,
@@ -16,17 +17,16 @@ const initialState: AdminState = {
 export const loginAdmin = createAsyncThunk<AdminLoginResponse, AdminLoginPayload>(
   'admin/loginUser',
   async (loginDetails, { rejectWithValue }) => {
-    console.log("admin slice", loginDetails);
 
     try {
       const response = await adminLogin(loginDetails);
       // localStorage.setItem('token', response.token);
-      Cookies.set('refreshToken', response.refreshToken,{
+      Cookies.set('AdminRefreshToken', response.refreshToken,{
         sameSite: 'strict',
         expires: 1/96
       });
 
-      Cookies.set('accessToken', response.accessToken,{
+      Cookies.set('AdminAccessToken', response.accessToken,{
         sameSite: 'strict',
         expires: 7
       });
@@ -41,7 +41,8 @@ export const clearAdmin = createAsyncThunk<void, void>(
   'user/clearUser',
   async (_, { dispatch }) => {
     dispatch(logout());
-    localStorage.removeItem('token');
+    Cookies.remove('AdminRefreshToken');
+    Cookies.remove('AdminAccessToken');
   }
 );
 
@@ -80,8 +81,11 @@ export const adminSlice = createSlice({
 
 export const { logout } = adminSlice.actions;
 
-export const selectAdmin = (state: { admin: AdminState }) => state.admin;
-export const selectStatus = (state: { admin: AdminState }) => state.admin.status;
-export const selectError = (state: { admin: AdminState }) => state.admin.error;
+// export const selectAdmin = (state: { admin: AdminState }) => state.admin;
+// export const selectStatus = (state: { admin: AdminState }) => state.admin.status;
+// export const selectError = (state: { admin: AdminState }) => state.admin.error;
+export const selectAdmin = (state: RootState) => state.admin.admin;
+export const selectStatus = (state: RootState) => state.admin.status;
+export const selectError = (state: RootState) => state.admin.error;
 
 export default adminSlice.reducer;

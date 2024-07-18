@@ -4,8 +4,7 @@ import { useAppDispatch } from '../../store/hooks';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { loginAdmin } from '../../Slices/adminSlice/adminSlice';
-import { auth, googleProvider } from '../../config/firebase';
-import { signInWithPopup } from 'firebase/auth';
+
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();

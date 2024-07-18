@@ -1,4 +1,3 @@
-// import { UserData, GoogleUser } from './userInterfaces/apiInterfaces';
 import { UserData, GoogleUser} from "./apiInterfaces";
 export interface UserState {
   user: UserData | GoogleUser | null;
@@ -9,9 +8,3 @@ export interface UserState {
   email: string | null;
 }
 
-// export interface GoogleUser{
-//   userId: string,
-//   userName: string,
-//   email: string,
-//   profileImage: string
-// }

@@ -1,5 +1,3 @@
-// infoComponent.tsx
-
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { selectUser, updateUser } from '../../../Slices/userSlice/userSlice';
@@ -18,10 +16,10 @@ const InfoComponent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const initialValues: FormValues = {
-    userId: user?.user?.id || '', 
-    username: user?.user?.username || '',
-    displayName: user?.user?.displayName || '',
-    bio: user?.user?.bio || '',
+    userId: user?.id || '', 
+    username: user?.username || '',
+    displayName: user?.displayName || '',
+    bio: user?.bio || '',
   };
 
   const validationSchema = Yup.object({

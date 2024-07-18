@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import { useAppDispatch } from '../../store/hooks';
-import { GoogleLoginPayload } from '../../interfaces/userInterfaces/apiInterfaces';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { loginUser, googleLogin } from '../../Slices/userSlice/userSlice';
+import { loginUser, googleAuth } from '../../Slices/userSlice/userSlice';
 import { auth, googleProvider } from '../../config/firebase';
 import { signInWithPopup } from 'firebase/auth';
+import { toast } from 'sonner';
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -29,9 +29,12 @@ const Login: React.FC = () => {
       .unwrap()
       .then(() => {
         setStatus({ success: true });
+        toast.success('Login Successfull')
+        setTimeout(() => navigate('/'), 1000);
       })
       .catch((error: any) => {
         setStatus({ success: false, error: error.message });
+        toast.error(error.message)
       })
       .finally(() => {
         setSubmitting(false);
@@ -42,84 +45,78 @@ const Login: React.FC = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
         const user = result.user;
-        const googleLoginDetails: GoogleLoginPayload = {
-          userId: user.uid,  
+        const googleLoginDetails = {
+          userId: user.uid,
           email: user.email!,
           userName: user.displayName!,
           profileImage: user.photoURL!,
         };
-        dispatch(googleLogin(googleLoginDetails))
+        console.log("googleLoginDetails in login page:",googleLoginDetails);
+        
+        dispatch(googleAuth(googleLoginDetails))
           .unwrap()
           .then(() => {
-            navigate('/home');
+            toast.success('Google login successfull')
+            setTimeout(() => navigate('/home'), 1000);
           })
           .catch((error: any) => {
-            console.error('Google login failed:', error);
+            // setStatus({ success: false, error: error.message });
+            toast.error(error.message)
           });
       })
       .catch((error) => {
-        console.error('Google sign-in error:', error);
+        toast.error('Google sign-in error: ' + error.message);
       });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100" style={{ backgroundImage: "url('https://pro-theme.com/html/teamhost/assets/img/heading8.jpg')" }}>
-      <div className="bg-zinc-900	 p-6 rounded-lg shadow-md w-full max-w-md">
+      <div className="bg-zinc-900 p-6 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-white text-2xl font-bold mb-4">Login</h2>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting, status }) => {
-            useEffect(() => {
-              if (status?.success) {
-                navigate('/home');
-              }
-            }, [status, navigate]);
+          {({ isSubmitting, status }) => (
+            <Form>
+              <div className="mb-4">
+                <label className="block text-white text-sm font-bold mb-2" htmlFor="email">
+                  Email
+                </label>
+                <Field
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="border border-gray-300 p-2 rounded-lg w-full"
+                />
+                <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
 
-            return (
-              <Form>
-                <div className="mb-4">
-                  <label className="block text-white text-sm font-bold mb-2" htmlFor="email">
-                    Email
-                  </label>
-                  <Field
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="border border-gray-300 p-2 rounded-lg w-full"
-                  />
-                  <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
+              <div className="mb-4">
+                <label className="block text-white text-sm font-bold mb-2" htmlFor="password">
+                  Password
+                </label>
+                <Field
+                  type="password"
+                  id="password"
+                  name="password"
+                  className="border border-gray-300 p-2 rounded-lg w-full"
+                />
+                <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
 
-                <div className="mb-4">
-                  <label className="block text-white text-sm font-bold mb-2" htmlFor="password">
-                    Password
-                  </label>
-                  <Field
-                    type="password"
-                    id="password"
-                    name="password"
-                    className="border border-gray-300 p-2 rounded-lg w-full"
-                  />
-                  <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
-
-                {status?.error && <div className="text-red-500 text-sm mb-4">{status.error}</div>}
-
-                <div className="mb-4">
-                  <button
-                    type="submit"
-                    className="bg-blue-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-                    disabled={isSubmitting || status === 'loading'}
-                  >
-                    {isSubmitting || status === 'loading' ? 'Logging in...' : 'Login'}
-                  </button>
-                </div>
-              </Form>
-            );
-          }}
+              <div className="mb-4">
+                <button
+                  type="submit"
+                  className="bg-blue-700 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                  disabled={isSubmitting || status === 'loading'}
+                >
+                  {isSubmitting || status === 'loading' ? 'Logging in...' : 'Login'}
+                </button>
+              </div>
+            </Form>
+          )}
         </Formik>
         <div className="mb-4">
           <button
@@ -132,9 +129,8 @@ const Login: React.FC = () => {
             Don’t have an account yet? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => navigate('/signup')}>Sign up</a>
           </p>
           <p className="text-sm font-light text-gray-500 dark:text-gray-400 pt-2">
-           <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => navigate('/confirm-mail')}> Forget Password?</a>
-          </p>        
-          
+            <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => navigate('/confirm-mail')}>Forget Password?</a>
+          </p>
         </div>
       </div>
     </div>

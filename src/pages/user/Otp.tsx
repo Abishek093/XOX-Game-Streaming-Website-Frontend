@@ -5,6 +5,7 @@ import { useAppDispatch } from '../../store/hooks';
 import { verifyOtp, verifyResetOtp } from '../../Slices/userSlice/userSlice'; 
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 interface LocationState {
   email: string;
@@ -78,34 +79,36 @@ const OtpPage: React.FC = () => {
     inputs.forEach((input) => {
       input.addEventListener('focus', (e) => (e.target as HTMLInputElement).select());
     });
-
+  
     const interval = setInterval(() => {
       setTimer((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
           setIsResendDisabled(false);
-          setIsVerifyDisabled(true); // Disable the verify button
+          setIsVerifyDisabled(true); 
+          toast.warning("Otp expired! Resend to get new one.");
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-
+  
     return () => clearInterval(interval);
-  }, []);
-
+  }, []); 
+  
   const handleSubmit = async (otp: string) => {
     try {      
       if (isSignup) {
         const response = await dispatch(verifyOtp({ email, otp })).unwrap();
-        console.log(response);
+        toast.success("Signup successfull. Login to continue!")
         navigate('/login');
       } else if (isPasswordReset) {
         const response = await dispatch(verifyResetOtp({ email, otp })).unwrap();
+        toast.success("Otp verified successfully")
         navigate('/reset-password', { state: { email: response.email, isPasswordReset: true, isSignup: false } }); 
       }
     } catch (error: any) {
-      console.error(error.message);
+      toast.error(error)
     }
   };
 

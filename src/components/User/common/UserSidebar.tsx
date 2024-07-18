@@ -5,6 +5,7 @@ import { clearUser, selectUser } from '../../../Slices/userSlice/userSlice';
 import Cookies from 'js-cookie';
 import { FaHome, FaUser, FaComments, FaUserFriends, FaWallet, FaNewspaper, FaUsers, FaStream, FaRegFileAlt, FaQuestionCircle, FaSignOutAlt } from 'react-icons/fa';
 
+
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,8 +25,8 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="bg-[#ffff] text-gray-900 w-64 h-full flex flex-col p-2 drop-shadow-md sticky top-0 fixed">
-      <div className="mb-12 drop-shadow-md">
+    <div className="bg-white text-gray-900 w-64 h-screen sticky top-0 flex flex-col px-1.5 drop-shadow-md scrollbar-thumb-rounded-full scrollbar-thin overflow-y-auto">
+      <div className="sticky top-0 mb-12 drop-shadow-md bg-white p-0">
         <h1 className="text-2xl font-bold text-orange-500 px-4 py-2">XOX</h1>
       </div>
       <div className="flex-1">

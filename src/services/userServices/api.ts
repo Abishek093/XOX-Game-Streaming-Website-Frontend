@@ -1,21 +1,25 @@
-import { UserData, VerifyOtpPayload, VerifyOtpResponse, LoginPayload, LoginResponse, GoogleUser, AuthenticatedUser, RefreshTokenResponse, UpdateUserResponse, UpdateUser, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse } from '../../interfaces/userInterfaces/apiInterfaces';
+import { UserData, UserApiData, VerifyOtpPayload, VerifyOtpResponse, LoginPayload, LoginResponse, GoogleUser, AuthenticatedUser, RefreshTokenResponse, UpdateUserResponse, UpdateUser, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse } from '../../interfaces/userInterfaces/apiInterfaces';
 import axiosInstance from './axiosInstance';
+
 
 const API_URL = 'http://localhost:5000/api/';
 
-export const signup = async (userDetails: UserData): Promise<UserData> => {
+export const signup = async (userDetails: UserApiData): Promise<UserData> => {
   try {
     const response = await axiosInstance.post<UserData>(`${API_URL}signup`, userDetails);
     console.log(response);
     return response.data;
   } catch (error: any) {
-    if (error.response) {
-      throw new Error(error.response.data.message || 'Failed to sign up');
-    } else if (error.request) {
-      throw new Error('No response received from server');
-    } else {
-      throw new Error(error.message || 'Failed to sign up');
-    }
+    console.log("Api error",error);    
+    console.log("Api error message",error.response.data);
+    throw error.response?.data || { message: 'Failed to signup' };    
+    // if (error.response) {
+    //   throw new Error(error.response.data.message || 'Failed to sign up');
+    // } else if (error.request) {
+    //   throw new Error('No response received from server');
+    // } else {
+    //   throw new Error(error.message || 'Failed to sign up');
+    // }
   }
 };
 
@@ -24,15 +28,16 @@ export const verifyOtpApi = async (otpDetails: VerifyOtpPayload): Promise<Verify
     const response = await axiosInstance.post<VerifyOtpResponse>(`${API_URL}verify-otp`, otpDetails);
     return response.data;
   } catch (error: any) {
+    console.log("Error in verify otp",error);
+    console.log("Error message in verify otp",error.response?.data);
+    
     throw error.response?.data || { message: 'Failed to verify OTP' };
   }
 };
 
 export const login = async (loginDetails: LoginPayload): Promise<LoginResponse> => {
   try {
-    console.log("Service", loginDetails);
     const response = await axiosInstance.post<LoginResponse>(`${API_URL}login`, loginDetails);
-    console.log("Service response", response.data);
     return response.data;
   } catch (error: any) {
     throw error.response?.data || { message: 'Failed to login' };
@@ -45,29 +50,17 @@ export const confirmMailApi = async (emailRequest: ConfirmMailRequest): Promise<
     const response = await axiosInstance.post<ConfirmMailResponse>(`${API_URL}confirm-mail`, emailRequest);
     return response.data;
   } catch (error: any) {
-    throw error.response?.data || { message: 'Failed to login' };
+    throw error.response?.data || { message: 'Failed to verify login' };
   }
 };
 
-export const googleSignupService = async (googleSignupDetails: GoogleUser): Promise<AuthenticatedUser> => {
-  try {
-    const response = await axiosInstance.post<AuthenticatedUser>(`${API_URL}googleSignup`, googleSignupDetails);
-    return response.data;
-  } catch (error: any) {
-    if (error.response) {
-      throw new Error(error.response.data.message || 'Failed to sign up');
-    } else if (error.request) {
-      throw new Error('No response received from server');
-    } else {
-      throw new Error(error.message || 'Failed to sign up');
-    }
-  }
-};
 
-export const googleLoginService = async (googleLoginDetails: GoogleUser): Promise<AuthenticatedUser> => {
+export const googleAuthApi = async (googleAuthDetails: GoogleUser): Promise<AuthenticatedUser> => {
   try {
-    const response = await axiosInstance.post<AuthenticatedUser>(`${API_URL}googleLogin`, googleLoginDetails);
-    return response.data;
+    console.log("googleAuthDetails api",googleAuthDetails)
+    const response = await axiosInstance.post<AuthenticatedUser>(`${API_URL}googleAuth`,googleAuthDetails)
+    console.log("Response",response, "Response.data", response.data);
+    return response.data
   } catch (error: any) {
     if (error.response) {
       throw new Error(error.response.data.message || 'Failed to login');

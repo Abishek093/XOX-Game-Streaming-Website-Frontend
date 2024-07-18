@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { signupUser, googleSignup, selectStatus, selectError } from '../../Slices/userSlice/userSlice';
+import { signupUser, selectStatus, selectError, googleAuth } from '../../Slices/userSlice/userSlice';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
@@ -9,12 +9,18 @@ import dayjs from 'dayjs';
 import { auth, googleProvider } from "../../config/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { parse, isDate, subYears } from 'date-fns';
+import { toast } from 'sonner';
+import SearchModal from '../../components/User/Signup/SearchModal';
+import axiosInstance from '../../services/userServices/axiosInstance';
 
 const Signup: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   // const status = useAppSelector(selectStatus);
   // const error = useAppSelector(selectError);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState('');
+  const [username, setUsername] = useState('');
 
   const initialValues = {
     userName: '',
@@ -55,9 +61,13 @@ const Signup: React.FC = () => {
       .unwrap()
       .then(() => {
         setStatus({ success: true });
+        toast.success("Verify otp to continue!")
       })
-      .catch((error: string) => {
+      .catch((error: any) => {
+        console.log("error in signup", error);
+        
         setStatus({ success: false, error });
+        toast.error(error)
       })
       .finally(() => {
         setSubmitting(false);
@@ -78,17 +88,44 @@ const Signup: React.FC = () => {
           password: '', 
           birthDate: '' 
         };
-        await dispatch(googleSignup(user)).unwrap();
+        await dispatch(googleAuth(user)).unwrap();
         const token = localStorage.getItem('token');
         if (token) {
           navigate('/home');
         }
       }
-    } catch (error) {
+    } catch (error:any) {
+      if (error.message.includes('Username already exist')) { 
+        setModalOpen(true); 
+      }
       console.error("Error signing up with Google: ", error);
     }
   };
+  const checkUsernameAvailability = async (username: string) => {
+    try {
+      const API_URL = process.env.VITE_USER_API_URL
+      axiosInstance.get(`${API_URL}check-username?username=${username}`);
+      // if (result.available) {
+      //   setUsernameStatus('success');
+      // } else {
+      //   setUsernameStatus('error');
+      // }
+    } catch (error) {
+      console.error("Error checking username availability: ", error);
+      setUsernameStatus('error');
+    }
+  };
 
+  const handleSearchInputChange = (searchValue: string) => {
+    setUsername(searchValue);
+  };
+
+  const handleUsernameChange = useCallback(
+    (username: string) => {
+      checkUsernameAvailability(username);
+    },
+    [checkUsernameAvailability]
+  );
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100" style={{ backgroundImage: "url('https://pro-theme.com/html/teamhost/assets/img/heading8.jpg')" }}>
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
@@ -200,16 +237,21 @@ const Signup: React.FC = () => {
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400 pt-5">
                   Already have an account? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => navigate('/login')}>Login here</a>
                 </p>
-                {status && status.success && (
+                {/* {status && status.success && (
                   <div className="text-green-500 text-sm mt-4">Signup successful! Redirecting to OTP page...</div>
                 )}
                 {status && !status.success && (
                   <div className="text-red-500 text-sm mt-4">{status.error}</div>
-                )}
+                )} */}
               </Form>
             );
           }}
         </Formik>
+        <SearchModal
+        modalOpen={modalOpen}
+        handleInputChange={handleSearchInputChange}
+        handleUsernameChange={handleUsernameChange}
+        />
       </div>
     </div>
   );

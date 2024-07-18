@@ -37,27 +37,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="w-64 bg-gray-800 text-white flex flex-col p-4">
-        <div className="text-2xl font-bold mb-6 text-center">XOX</div>
-        <nav>
-          <ul>
-            <li className="mb-4">
-              <a href="/admin/dashboard" className="text-lg hover:text-gray-300">Dashboard</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
       <div className="flex-1 flex flex-col">
-        <div className="bg-white shadow-md flex items-center justify-between p-4">
-          <div className="text-2xl font-bold"></div>
-          <div>
-            <input
-              type="text"
-              placeholder="Search..."
-              className="border rounded-lg py-2 px-4"
-            />
-          </div>
-        </div>
         <main className="flex-1 p-6 bg-gray-100">
           <div className="bg-white shadow-md rounded-lg overflow-hidden">
             <table className="min-w-full bg-white">
