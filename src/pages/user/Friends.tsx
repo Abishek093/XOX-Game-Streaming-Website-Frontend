@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import SearchBar from '../../components/User/Friends/SearchBar';
 import FriendRequest from '../../components/User/Friends/FriendRequest';
 import SearchResult from '../../components/User/Friends/SearchResult';
-import axios from 'axios';
 import debounce from 'lodash.debounce';
 import axiosInstance from '../../services/userServices/axiosInstance';
 

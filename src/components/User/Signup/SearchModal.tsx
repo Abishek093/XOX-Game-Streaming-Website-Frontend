@@ -1,88 +1,99 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { FaSearch } from 'react-icons/fa';
-import debounce from 'lodash/debounce';
+import React, { useState, useEffect, useCallback } from 'react';
+import { debounce } from 'lodash';
+import axiosInstance from '../../../services/userServices/axiosInstance';
 
 interface SearchModalProps {
-  modalOpen: boolean;
-  handleInputChange: (searchValue: string) => void;
-  handleUsernameChange: (username: string) => void; // New prop to handle username change
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (username: string) => void;
 }
 
-const validationSchema = Yup.object({
-  search: Yup.string().required('Search is required'),
-});
-
-const SearchModal: React.FC<SearchModalProps> = ({
-  modalOpen,
-  handleInputChange,
-  handleUsernameChange, // Use the new prop
-}) => {
-  const [inputValue, setInputValue] = useState('');
-  const [inputStatus, setInputStatus] = useState(''); 
-
-  const debouncedHandleInputChange = debounce((value: string) => {
-    handleInputChange(value);
-  }, 500);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-    debouncedHandleInputChange(value);
-  };
+const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSubmit }) => {
+  const [username, setUsername] = useState<string>('');
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
 
   useEffect(() => {
-    handleUsernameChange(inputValue); 
-  }, [inputValue, handleUsernameChange]);
+    if (isOpen) {
+      setUsername('');
+      setIsUsernameAvailable(null);
+    }
+  }, [isOpen]);
+
+  const checkUsernameAvailability = useCallback(
+    debounce(async (username: string) => {
+      console.log("khjfgdjkfh",username)
+      try {
+        const response = await axiosInstance.get(`/check-username?username=${username}`);
+        setIsUsernameAvailable(response.data.available);
+      } catch (error) {
+        console.error('Error checking username availability', error);
+      }
+    }, 500),
+    []
+  );
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUsername = e.target.value;
+    console.log(newUsername)
+    setUsername(newUsername);
+    setIsUsernameAvailable(null);
+    checkUsernameAvailability(newUsername);
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isUsernameAvailable) {
+      onSubmit(username);
+      onClose();
+    }
+  };
+
 
   return (
-    <>
-      {modalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <div className="relative w-full p-4">
-              <div className="absolute inset-y-0 flex items-center pb-8 pl-3 pointer-events-none">
-                <FaSearch className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              </div>
-              <Formik
-                initialValues={{ search: '' }}
-                validationSchema={validationSchema}
-                onSubmit={(values, { setSubmitting }) => {
-                  setSubmitting(false);
-                }}
-              >
-                {({ isSubmitting }) => (
-                  <Form>
-                    <p>Choose a Username for Your Account!</p>
-                    <Field
-                      type="text"
-                      id="simple-search"
-                      name="search"
-                      className={`bg-gray-50 border ${inputStatus === 'success' ? 'border-green-500' : 'border-red-500'} text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-                      placeholder="Search Username..."
-                      required
-                      onChange={handleChange}
-                    />
-                    <div className="flex justify-end mt-4">
-                      <button
-                        type="submit"
-                        className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 ${
-                          isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? 'Searching...' : 'Search'}
-                      </button>
-                    </div>
-                  </Form>
-                )}
-              </Formik>
+    isOpen ? (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+          <h2 className="text-2xl font-bold mb-4">Choose a unique username</h2>
+          <form onSubmit={handleFormSubmit}>
+            <div className="mb-4">
+              <label htmlFor="username" className="block text-sm font-semibold mb-1">New Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={username}
+                onChange={handleUsernameChange}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                placeholder="Enter a unique username"
+                required
+              />
+              {isUsernameAvailable === false && (
+                <div className="text-red-500 text-sm mt-1">Username already taken</div>
+              )}
+              {isUsernameAvailable === true && (
+                <div className="text-green-500 text-sm mt-1">Username is available</div>
+              )}
             </div>
-          </div>
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-white bg-gray-500 hover:bg-gray-600 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg"
+                disabled={!isUsernameAvailable}
+              >
+                Submit
+              </button>
+            </div>
+          </form>
         </div>
-      )}
-    </>
+      </div>
+    ) : null
   );
 };
 

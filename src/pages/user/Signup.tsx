@@ -5,22 +5,19 @@ import { signupUser, selectStatus, selectError, googleAuth } from '../../Slices/
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
-// import { parse } from 'date-fns';
 import { auth, googleProvider } from "../../config/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { parse, isDate, subYears } from 'date-fns';
 import { toast } from 'sonner';
 import SearchModal from '../../components/User/Signup/SearchModal';
-import axiosInstance from '../../services/userServices/axiosInstance';
+import Cookies from 'js-cookie';
 
 const Signup: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  // const status = useAppSelector(selectStatus);
-  // const error = useAppSelector(selectError);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [usernameStatus, setUsernameStatus] = useState('');
-  const [username, setUsername] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const[tempUser, setTempUser] = useState<any>(null)
+
 
   const initialValues = {
     userName: '',
@@ -65,7 +62,6 @@ const Signup: React.FC = () => {
       })
       .catch((error: any) => {
         console.log("error in signup", error);
-        
         setStatus({ success: false, error });
         toast.error(error)
       })
@@ -88,44 +84,62 @@ const Signup: React.FC = () => {
           password: '', 
           birthDate: '' 
         };
-        await dispatch(googleAuth(user)).unwrap();
-        const token = localStorage.getItem('token');
-        if (token) {
-          navigate('/home');
+        const response: any = await dispatch(googleAuth(user)).unwrap();
+        console.log("Response", response);
+        if (response.isUsernameTaken) {
+          setTempUser(user);
+          setIsModalOpen(true);
+        } else {
+          const token = Cookies.get('UserAccessToken');
+          if (token) {
+            toast.success("Signup successful")
+            navigate('/home');
+          }
         }
       }
-    } catch (error:any) {
-      if (error.message.includes('Username already exist')) { 
-        setModalOpen(true); 
-      }
+    } catch (error: any) {
+      toast.error(error.message);
       console.error("Error signing up with Google: ", error);
     }
   };
-  const checkUsernameAvailability = async (username: string) => {
+
+  const handleUsernameSubmit = async (username: string) => {
     try {
-      const API_URL = process.env.VITE_USER_API_URL
-      axiosInstance.get(`${API_URL}check-username?username=${username}`);
-      // if (result.available) {
-      //   setUsernameStatus('success');
-      // } else {
-      //   setUsernameStatus('error');
-      // }
-    } catch (error) {
-      console.error("Error checking username availability: ", error);
-      setUsernameStatus('error');
+      if (tempUser) {
+        const updatedUser = { ...tempUser, userName: username };
+        console.log("updatedUser", updatedUser);
+  
+        const user = {
+          userId: updatedUser.userId, 
+          userName: updatedUser.userName,
+          email: updatedUser.email,
+          profileImage: updatedUser.profileImage
+        };
+  
+        const response: any = await dispatch(googleAuth(user)).unwrap();
+        console.log("Response", response);
+  
+        if (response.isUsernameTaken) {
+          toast.error('Username is already taken. Please choose another one.');
+        } else {
+          const token = Cookies.get('UserAccessToken');
+          if (token) {
+            toast.success("Signup successful")
+            navigate('/home');
+          } else {
+            toast.error('Error during signup. Please try again.');
+          }
+        }
+      } else {
+        toast.error('Temporary user data not found.');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error updating username. Please try again.');
+      console.error("Error updating username: ", error);
     }
   };
+  
 
-  const handleSearchInputChange = (searchValue: string) => {
-    setUsername(searchValue);
-  };
-
-  const handleUsernameChange = useCallback(
-    (username: string) => {
-      checkUsernameAvailability(username);
-    },
-    [checkUsernameAvailability]
-  );
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100" style={{ backgroundImage: "url('https://pro-theme.com/html/teamhost/assets/img/heading8.jpg')" }}>
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
@@ -135,122 +149,102 @@ const Signup: React.FC = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting, status, setFieldValue, values }) => {
-            // useEffect(() => {
-            //   if (status?.success) {
-            //     navigate('/otp', { state: { email: values.email } });
-            //   }
-            // }, [status, navigate]);
-            useEffect(() => {
-              if (status?.success) {
-                navigate('/otp', { state: { email: values.email, isSignup: true } });
-              }
-            }, [status, navigate]);
-            return (
-              <Form>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="userName">
-                    Username
-                  </label>
-                  <Field
-                    type="text"
-                    id="userName"
-                    name="userName"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                  <ErrorMessage name="userName" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="displayName">
-                    Display Name
-                  </label>
-                  <Field
-                    type="text"
-                    id="displayName"
-                    name="displayName"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                  <ErrorMessage name="displayName" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-                    Email
-                  </label>
-                  <Field
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                  <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-                    Password
-                  </label>
-                  <Field
-                    type="password"
-                    id="password"
-                    name="password"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                  <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
-                    Confirm Password
-                  </label>
-                  <Field
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                  <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="birthDate">
-                    Birth Date
-                  </label>
-                  <Field
-                    type="date"
-                    id="birthDate"
-                    name="birthDate"
-                    value={values.birthDate}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue('birthDate', e.target.value)}
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  />
-                  <ErrorMessage name="birthDate" component="div" className="text-red-500 text-sm mt-1" />
-                </div>
+          {({ isSubmitting, status }) => (
+            <Form>
+              <div className="mb-4">
+                <label htmlFor="userName" className="block text-sm font-semibold mb-1">Username</label>
+                <Field
+                  type="text"
+                  id="userName"
+                  name="userName"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter your username"
+                />
+                <ErrorMessage name="userName" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="displayName" className="block text-sm font-semibold mb-1">Display Name</label>
+                <Field
+                  type="text"
+                  id="displayName"
+                  name="displayName"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter your display name"
+                />
+                <ErrorMessage name="displayName" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-sm font-semibold mb-1">Email</label>
+                <Field
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter your email"
+                />
+                <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="password" className="block text-sm font-semibold mb-1">Password</label>
+                <Field
+                  type="password"
+                  id="password"
+                  name="password"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter your password"
+                />
+                <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="confirmPassword" className="block text-sm font-semibold mb-1">Confirm Password</label>
+                <Field
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Confirm your password"
+                />
+                <ErrorMessage name="confirmPassword" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="birthDate" className="block text-sm font-semibold mb-1">Birth Date</label>
+                <Field
+                  type="date"
+                  id="birthDate"
+                  name="birthDate"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                />
+                <ErrorMessage name="birthDate" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              <div className="mb-4 flex justify-between">
+                <button
+                  type="button"
+                  onClick={handleGoogleSignup}
+                  className="w-full px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg"
+                >
+                  Sign up with Google
+                </button>
+              </div>
+              <div className="mb-4 flex justify-between">
                 <button
                   type="submit"
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-                  disabled={isSubmitting || status === 'loading'}
+                  className={`w-full px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg ${
+                    isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                  disabled={isSubmitting}
                 >
-                  {isSubmitting || status === 'loading' ? 'Signing Up...' : 'Sign Up'}
+                  {isSubmitting ? 'Signing up...' : 'Sign Up'}
                 </button>
-
-                <button type="button" onClick={handleGoogleSignup} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mt-4">
-                  Sign Up with Google
-                </button>
-
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400 pt-5">
-                  Already have an account? <a href="#" className="font-medium text-primary-600 hover:underline dark:text-primary-500" onClick={() => navigate('/login')}>Login here</a>
-                </p>
-                {/* {status && status.success && (
-                  <div className="text-green-500 text-sm mt-4">Signup successful! Redirecting to OTP page...</div>
-                )}
-                {status && !status.success && (
-                  <div className="text-red-500 text-sm mt-4">{status.error}</div>
-                )} */}
-              </Form>
-            );
-          }}
+              </div>
+              {status && status.success && <div className="text-green-500">Signup successful! Please check your email to verify your account.</div>}
+              {status && status.error && <div className="text-red-500">Signup failed. {status.error.message}</div>}
+            </Form>
+          )}
         </Formik>
         <SearchModal
-        modalOpen={modalOpen}
-        handleInputChange={handleSearchInputChange}
-        handleUsernameChange={handleUsernameChange}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleUsernameSubmit}
         />
       </div>
     </div>
