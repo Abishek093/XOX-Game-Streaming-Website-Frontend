@@ -93,7 +93,7 @@ const Signup: React.FC = () => {
           const token = Cookies.get('UserAccessToken');
           if (token) {
             toast.success("Signup successful")
-            navigate('/home');
+            navigate('/');
           }
         }
       }
@@ -125,7 +125,7 @@ const Signup: React.FC = () => {
           const token = Cookies.get('UserAccessToken');
           if (token) {
             toast.success("Signup successful")
-            navigate('/home');
+            navigate('/');
           } else {
             toast.error('Error during signup. Please try again.');
           }

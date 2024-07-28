@@ -1,4 +1,4 @@
-import { UserData, UserApiData, VerifyOtpPayload, VerifyOtpResponse, LoginPayload, LoginResponse, GoogleUser, AuthenticatedUser, RefreshTokenResponse, UpdateUserResponse, UpdateUser, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse } from '../../interfaces/userInterfaces/apiInterfaces';
+import { UserData, UserApiData, VerifyOtpPayload, VerifyOtpResponse, LoginPayload, LoginResponse, GoogleUser, AuthenticatedUser, RefreshTokenResponse, UpdateUserResponse, UpdateUser, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse, ImageUploadValues, ImageUploadResponse } from '../../interfaces/userInterfaces/apiInterfaces';
 import axiosInstance from './axiosInstance';
 
 
@@ -106,6 +106,18 @@ export const UpdatePasswordApi = async (newPasswordDeatails: UpdatePasswordReque
     throw error.response?.data || { message: 'Failed to update password' };
   }
 };
+
+export const updateProfieImageApi = async(profileImageDetails: ImageUploadValues):Promise<ImageUploadResponse>=>{
+  const response = await axiosInstance.post<ImageUploadResponse>(`${API_URL}update-profile-image`,profileImageDetails)
+  console.log(response, "in api")
+  return response.data
+}
+
+export const updateTitleImageApi= async(titleImageDetails: ImageUploadValues):Promise<ImageUploadResponse>=>{
+  const response = await axiosInstance.post<ImageUploadResponse>(`${API_URL}update-title-image`,titleImageDetails)
+  console.log(response, "in api")
+  return response.data
+}
 
 export const refreshAccessToken = async (refreshToken: string): Promise<RefreshTokenResponse> => {
   const response = await axiosInstance.post<RefreshTokenResponse>(`${API_URL}refresh-token`, { refreshToken });

@@ -7,7 +7,7 @@ const Navbar = () => {
   const user = useAppSelector(selectUser);
   console.log(user,"user in navbar")
   return (
-    <div className=" grid bg-white text-gray-900 flex justify-end p-4 drop-shadow-md h-20 sticky top-0 z-10 ">
+    <div className=" grid bg-white text-gray-900 flex justify-end p-4 drop-shadow-md h-12 sticky top-0 z-10 ">
       {/* <div className="flex items-center">
         <input
           type="text"

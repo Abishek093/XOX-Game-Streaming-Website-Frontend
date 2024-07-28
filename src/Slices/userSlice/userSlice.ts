@@ -2,8 +2,10 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { signup, verifyOtpApi, UpdatePasswordApi, login, 
   // googleSignupService,googleLoginService, 
   googleAuthApi,
-  updateUserApi, confirmMailApi, verifyResetOtpApi } from '../../services/userServices/api';
-import { LoginPayload,UserApiData, UserData, VerifyOtpPayload, VerifyOtpResponse, LoginResponse, GoogleUser, AuthenticatedUser, UpdateUser, UpdateUserResponse, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse} from '../../interfaces/userInterfaces/apiInterfaces';
+  updateUserApi, confirmMailApi, verifyResetOtpApi, 
+  updateProfieImageApi,
+  updateTitleImageApi} from '../../services/userServices/api';
+import { LoginPayload,UserApiData, UserData, VerifyOtpPayload, VerifyOtpResponse, LoginResponse, GoogleUser, AuthenticatedUser, UpdateUser, UpdateUserResponse, ConfirmMailRequest, ConfirmMailResponse, verifyResetOtpResponse, UpdatePasswordRequest, UpdatePasswordResponse, ImageUploadValues, ImageUploadResponse} from '../../interfaces/userInterfaces/apiInterfaces';
 import { UserState } from '../../interfaces/userInterfaces/storeInterfaces';
 import Cookies from 'js-cookie';
 import { RootState } from '../../store';
@@ -85,7 +87,7 @@ export const googleAuth = createAsyncThunk<AuthenticatedUser, GoogleUser>(
 
 
 
-export const updateUser = createAsyncThunk<UpdateUserResponse, UpdateUser>(
+export const  updateUser = createAsyncThunk<UpdateUserResponse, UpdateUser>(
   'user/updateUser',
   async (updateDetails, { rejectWithValue }) => {
     try {
@@ -126,6 +128,33 @@ export const updatePassword = createAsyncThunk<UpdatePasswordResponse, UpdatePas
   }
 );
 
+export const updateProfieImage = createAsyncThunk<ImageUploadResponse, ImageUploadValues>(
+  'user/profileImage',
+  async(profileImageDetails, {rejectWithValue}) => {
+    console.log("profileImageDetails",profileImageDetails)
+    try {
+      const response = await updateProfieImageApi(profileImageDetails)
+      console.log(response)
+      return response
+    } catch (error:any) {
+      return rejectWithValue(error.message);
+    }
+  }
+)
+
+export const updateTitleImage = createAsyncThunk<ImageUploadResponse, ImageUploadValues>(
+  'user/titleImage',
+  async(titleImageDetails, {rejectWithValue}) => {
+    try {
+      const response = await updateTitleImageApi(titleImageDetails)
+      console.log(response)
+      return response
+    } catch (error:any) {
+      return rejectWithValue(error.message);
+    }
+  }
+)
+
 export const clearUser = createAsyncThunk<void, void>(
   'user/clearUser',
   async (_, { dispatch }) => {
@@ -133,6 +162,7 @@ export const clearUser = createAsyncThunk<void, void>(
     Cookies.remove('UserAccessToken');
     Cookies.remove('UserRefreshToken');  }
 );
+
 
 export const verifyResetOtp = createAsyncThunk<verifyResetOtpResponse, VerifyOtpPayload>(
   'user/verifyResetOtp',
@@ -234,6 +264,43 @@ export const userSlice = createSlice({
         state.error = action.payload as string || "User profile updation failed"
       })
 
+  
+      .addCase(updateProfieImage.pending, (state)=>{
+        state.status = 'loading'
+        state.error = null
+      })
+
+      .addCase(updateProfieImage.fulfilled, (state, action: PayloadAction<ImageUploadResponse>) => {
+        state.status = 'idle';
+        if (state.user) {
+          state.user.profileImage = action.payload.profileImageUrl;
+        }
+        state.error = null;
+      })
+
+      .addCase(updateProfieImage.rejected, (state, action)=>{
+        state.status = 'failed'
+        state.error = action.payload as string || "User profile updation failed"
+      })
+
+
+      .addCase(updateTitleImage.pending, (state)=>{
+        state.status = 'loading'
+        state.error = null
+      })
+
+      .addCase(updateTitleImage.fulfilled, (state, action: PayloadAction<ImageUploadResponse>) => {
+        state.status = 'idle';
+        if (state.user) {
+          state.user.titleImage = action.payload.titleImageUrl;
+        }
+        state.error = null;
+      })
+
+      .addCase(updateTitleImage.rejected, (state, action)=>{
+        state.status = 'failed'
+        state.error = action.payload as string || "User profile updation failed"
+      })
       //confirm email
       .addCase(confirmMail.fulfilled, (state, action: PayloadAction<ConfirmMailResponse>) => {
         state.status = 'idle';

@@ -10,7 +10,7 @@ const PublicRoute: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/home');
+      navigate('/');
     }
   }, [user, navigate]);
 

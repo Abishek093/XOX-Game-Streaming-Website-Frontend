@@ -3,23 +3,34 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { selectUser, updateUser } from '../../../Slices/userSlice/userSlice';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 
 interface FormValues {
   userId: string;
   userName: string;
   displayName: string;
   bio: string;
+  profileImage: string;
+  titleImage: string
+}
+interface InfoComponentProps {
+  onProfileUpdate: (username: string) => void;
 }
 
-const InfoComponent: React.FC = () => {
+
+
+const InfoComponent: React.FC<InfoComponentProps> = ({onProfileUpdate}) => {
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const initialValues: FormValues = {
     userId: user?.id || '', 
     username: user?.username || '',
     displayName: user?.displayName || '',
     bio: user?.bio || '',
+    profileImage: user?.profileImage || '',
+    titleImage: user?.titleImage || ''
   };
 
   const validationSchema = Yup.object({
@@ -28,8 +39,11 @@ const InfoComponent: React.FC = () => {
     bio: Yup.string(),
   });
 
-  const onSubmit = (values: FormValues) => {
-    dispatch(updateUser(values));
+  const onSubmit = async(values: FormValues) => {
+    const result = await dispatch(updateUser(values));
+    if (updateUser.fulfilled.match(result)) {
+      onProfileUpdate(result.payload.user.username);
+    }
   };
 
   return (

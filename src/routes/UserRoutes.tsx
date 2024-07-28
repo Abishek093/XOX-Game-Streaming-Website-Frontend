@@ -1,3 +1,55 @@
+// import Signup from '../pages/user/Signup';
+// import OtpPage from '../pages/user/Otp';
+// import LoginPage from '../pages/user/Login';
+// import Home from '../pages/user/Home';
+// import Profile from '../pages/user/Profile';
+// import ConfirmMail from '../pages/user/ConfirmMail';
+// import ConfirmPassword from '../pages/user/ConfirmPassword';
+// import Friends from '../pages/user/Friends';
+
+// const userRoutes = [
+//   {
+//     path: '',
+//     element: <Home />,
+//   },
+//   {
+//     path: '/profile',
+//     element: <Profile />,
+//   },
+//   {
+//     path: '/friends',
+//     element: <Friends />,
+//   },
+//   {
+//     path: '/userDetails/:id',
+//     element: <Profile />,
+//   },
+// ];
+
+// const userPublicRoutes = [
+//   {
+//     path: '/signup',
+//     element: <Signup />,
+//   },
+//   {
+//     path: '/otp',
+//     element: <OtpPage />,
+//   },
+//   {
+//     path: '/login',
+//     element: <LoginPage />,
+//   },
+//   {
+//     path: '/confirm-mail',
+//     element: <ConfirmMail />,
+//   },
+//   {
+//     path: '/reset-password',
+//     element: <ConfirmPassword />,
+//   },
+// ];
+
+// export { userRoutes, userPublicRoutes };
 import Signup from '../pages/user/Signup';
 import OtpPage from '../pages/user/Otp';
 import LoginPage from '../pages/user/Login';
@@ -9,42 +61,38 @@ import Friends from '../pages/user/Friends';
 
 const userRoutes = [
   {
-    path: '/home',
+    path: '/',
     element: <Home />,
   },
   {
-    path: '/profile',
+    path: '/:username',
     element: <Profile />,
   },
   {
-    path: '/friends',
+    path: 'friends',
     element: <Friends />,
-  },
-  {
-    path: '/userDetails/:id',
-    element: <Profile />,
   },
 ];
 
 const userPublicRoutes = [
   {
-    path: '/signup',
+    path: 'signup',
     element: <Signup />,
   },
   {
-    path: '/otp',
+    path: 'otp',
     element: <OtpPage />,
   },
   {
-    path: '/login',
+    path: 'login',
     element: <LoginPage />,
   },
   {
-    path: '/confirm-mail',
+    path: 'confirm-mail',
     element: <ConfirmMail />,
   },
   {
-    path: '/reset-password',
+    path: 'reset-password',
     element: <ConfirmPassword />,
   },
 ];

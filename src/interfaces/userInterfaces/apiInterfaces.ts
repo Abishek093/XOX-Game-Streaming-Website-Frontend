@@ -32,6 +32,8 @@ export interface VerifyOtpPayload {
     email: string;
     password: string;
     birthDate: string;
+    profileImage?: string;
+    titleImage?: string;
   }
   export interface UserApiData {
     userName: string;
@@ -49,8 +51,17 @@ export interface VerifyOtpPayload {
     displayName?: string; 
     password?: string; 
     birthDate?: string; 
+    titleImage?: string;
   }
 
+  export interface UserDetails {
+    userId: string;
+    userName: string;
+    profileImage: string;
+    displayName?: string; 
+    password?: string; 
+  }
+  
   export interface AuthenticatedUser {
     accessToken: string;
     refreshToken: string;
@@ -113,4 +124,17 @@ export interface VerifyOtpPayload {
   export interface UpdatePasswordResponse {
     success: boolean;
     message: string;
+  }
+
+
+  export interface ImageUploadValues {
+    userId: string;
+    profileImage: string;
+    titleImage: string
+  }
+
+  export interface ImageUploadResponse {
+    userId: string;
+    profileImageUrl: string;
+    titleImageUrl: string
   }

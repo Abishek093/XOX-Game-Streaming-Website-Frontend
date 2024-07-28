@@ -57,7 +57,7 @@ const Login: React.FC = () => {
           .unwrap()
           .then(() => {
             toast.success('Google login successfull')
-            setTimeout(() => navigate('/home'), 1000);
+            setTimeout(() => navigate('/'), 1000);
           })
           .catch((error: any) => {
             // setStatus({ success: false, error: error.message });

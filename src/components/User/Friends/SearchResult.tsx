@@ -16,8 +16,8 @@ interface SearchResultProps {
 const SearchResult: React.FC<SearchResultProps> = ({ results }) => {
     const navigate = useNavigate()
 
-    const viewProfile = (userId: string) =>{            
-      navigate(`/userDetails/${userId}`)
+    const viewProfile = (username: string) =>{            
+      navigate(`/${username}`)
     }
 
 
@@ -35,7 +35,7 @@ const SearchResult: React.FC<SearchResultProps> = ({ results }) => {
             <span>{result.displayName}</span>
           </div>
           <div className='ml-auto'>
-              <button onClick={()=>viewProfile(result.id)} className="bg-blue-50 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-100">
+              <button onClick={()=>viewProfile(result.username)} className="bg-blue-50 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-100">
                 View Profile
               </button>
           </div>

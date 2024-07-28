@@ -4,6 +4,7 @@ import NewsArchive from '../../components/User/home/NewsArchive';
 import Communities from '../../components/User/home/Communities';
 
 const Home: React.FC = () => {
+  console.log('Home component rendered');
   return (
     <div className="flex">
       <div className="flex-1 flex flex-col">
