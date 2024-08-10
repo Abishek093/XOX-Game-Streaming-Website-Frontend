@@ -138,3 +138,8 @@ export interface VerifyOtpPayload {
     profileImageUrl: string;
     titleImageUrl: string
   }
+
+  export interface AspectRatio {
+    shape: "round" | "rect";
+    aspect: number[];
+  }

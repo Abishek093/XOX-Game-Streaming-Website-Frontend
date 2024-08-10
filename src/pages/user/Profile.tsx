@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import UserTitleCard from '../../components/User/profile/UserTitleCard';
 import UserProfileCard from '../../components/User/profile/UserProfileCard';
 import PostFeed from '../../components/User/common/PostFeed';
@@ -19,13 +20,12 @@ const Profile: React.FC = () => {
   const [ownProfile, setOwnProfile] = useState<boolean>(false);
   const { username } = useParams<{ username: string }>();
   const loggedInUser = useAppSelector(selectUser);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-
-  const handleProfileUpdate = (username: string) => {
+  const handleProfileUpdate = useCallback((username: string) => {
     setOwnProfile(true);
     navigate(`/${username}`);
-  };
+  }, [navigate]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -44,12 +44,31 @@ const Profile: React.FC = () => {
     };
 
     fetchUserProfile();
-  }, [username, loggedInUser, handleProfileUpdate]);
+  }, [username, loggedInUser]);
 
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        if (loggedInUser?.username === username) {
+          setUser(loggedInUser);
+          setOwnProfile(true);
+        } else {
+          const { data } = await axiosInstance.get(`/users/${username}`);
+          setUser(data);
+          setOwnProfile(false);
+        }
+      } catch (error) {
+        // handle error
+      }
+    };
+
+    fetchUserProfile();
+  }, [handleProfileUpdate]);
+  
   const renderContent = () => {
     switch (activeTab) {
       case 'posts':
-        return <PostFeed />;
+        return <PostFeed user={user} />;
       case 'info':
         return <InfoComponent onProfileUpdate={handleProfileUpdate} />;
       // case 'friends':
@@ -57,7 +76,7 @@ const Profile: React.FC = () => {
       // case 'groups':
       //   return <GroupsList />;
       default:
-        return <PostFeed />;
+        return <PostFeed user={user} />;
     }
   };
 
@@ -71,7 +90,7 @@ const Profile: React.FC = () => {
           <div className="col-span-3">
             <ProfileTabs setActiveTab={setActiveTab} ownProfile={ownProfile} />
           </div>
-          <div style={{scrollbarWidth:'none',WebkitOverflowScrolling:'touch'}} className="col-span-3 overflow-y-scroll h-[53vh]">
+          <div style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }} className="col-span-3 overflow-y-scroll h-[53vh]">
             {renderContent()}
           </div>
         </div>

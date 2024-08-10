@@ -1,38 +1,41 @@
-import React from 'react';
-import { Card, CardHeader, Avatar, CardMedia, CardContent, CardActions, Typography, Button, Box } from '@mui/material';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import CommentIcon from '@mui/icons-material/Comment';
+import React, { useEffect, useState } from 'react';
+import axiosInstance from '../../../services/userServices/axiosInstance';
+import Post from './Post';
+import { GoogleUser, UserData, UserDetails } from '../../../interfaces/userInterfaces/apiInterfaces';
 
-const PostFeed: React.FC = () => {
+interface PostFeedProps {
+  user: UserData | GoogleUser | UserDetails | null;
+}
+
+const PostFeed: React.FC<PostFeedProps> = ({ user }) => {
+  const [posts, setPosts] = useState<any[]>([]);
+
+  useEffect(() => {
+    console.log(user, "User in post feed");
+
+    const fetchPosts = async (userId: string) => {
+      console.log("Fetching posts for userId:", userId);
+      try {
+        const response = await axiosInstance.get(`/fetch-posts/${userId}`);
+        console.log("Response from fetch-posts:", response);
+        setPosts(response.data);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
+
+    if (user && user.id) {
+      fetchPosts(user.id);
+    }
+
+  }, [user]);
+
   return (
-    <Card sx={{ maxWidth: 'full', maxHeight: 'auto' ,margin: 'auto' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', padding: 2 }}>
-        <Avatar aria-label="user-avatar" src="/src/assets/sample.jpg" />
-        <Box sx={{ marginLeft: 2 }}>
-          <Typography variant="subtitle1">Lester Barry</Typography>
-          <Typography variant="body2" color="textSecondary">17 days ago</Typography>
-        </Box>
-      </Box>
-        <CardMedia
-          component="img"
-          sx={{ height: 400, width: 1020, paddingLeft: 9 }}
-          image="/src/assets/sample.jpg"
-          title="Gaming"
-        />
-      <CardContent>
-        <Typography variant="body2" color="textSecondary" component="p">
-          This is a description of the post. It can be a brief summary or any relevant information you want to display.
-        </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <Button aria-label="like" startIcon={<FavoriteIcon />}>
-          Like
-        </Button>
-        <Button aria-label="comment" startIcon={<CommentIcon />}>
-          Comment
-        </Button>
-      </CardActions>
-    </Card>
+    <div>
+      {posts.map((post) => (
+        <Post key={post._id} user={user} post={post} />
+      ))}
+    </div>
   );
 };
 
