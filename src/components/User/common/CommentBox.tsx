@@ -39,6 +39,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({ postId, userId, onClose }) => {
     const fetchComments = async () => {
       try {
         const comments = await axiosInstance.get(`${API_URL}fetch-comments/${postId}`);
+        console.log('comments',comments)
         setComments(comments.data);
       } catch (error) {
         console.error('Error fetching comments:', error);

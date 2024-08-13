@@ -225,7 +225,7 @@ interface ImageCropperProps {
   setAspectRatio: (aspectRatio: number) => void;
   onCropComplete: (croppedImage: string) => void;
   isPost: boolean;
-  onDescriptionSubmit: (description: string, croppedImage: string | null) => void; // Add this line
+  onDescriptionSubmit: (description: string, croppedImage: string | null) => void;  
 }
 
 const ImageCropper: React.FC<ImageCropperProps> = ({
@@ -254,7 +254,6 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
         const base64String = await convertToBase64(croppedImage);
         setCroppedImage(base64String);
         if (isPost) {
-          console.log(base64String)
           setIsModalOpen(true);
         } else {
           console.log(base64String)

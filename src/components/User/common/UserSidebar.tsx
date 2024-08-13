@@ -15,6 +15,7 @@ import {
   FaRegFileAlt,
   FaQuestionCircle,
   FaSignOutAlt,
+  FaCog,  // Added icon for Settings
 } from 'react-icons/fa';
 
 const Sidebar = () => {
@@ -75,8 +76,8 @@ const Sidebar = () => {
               <FaNewspaper className="inline-block mr-2" /> News
             </NavLink>
           </li>
-          <li className={`mb-6 ${getNavLinkClass('/community')} hover:text-orange-500 hover:border-l-4 hover:px-2`}>
-            <NavLink to="/community">
+          <li className={`mb-6 ${getNavLinkClass('/community-list')} hover:text-orange-500 hover:border-l-4 hover:px-2`}>
+            <NavLink to="/community-list">
               <FaUsers className="inline-block mr-2" /> Community
             </NavLink>
           </li>
@@ -99,6 +100,11 @@ const Sidebar = () => {
           <li className={`mb-6 ${getNavLinkClass('/help')} hover:text-orange-500 hover:border-l-4 hover:px-2`}>
             <NavLink to="/help">
               <FaQuestionCircle className="inline-block mr-2" /> Help
+            </NavLink>
+          </li>
+          <li className={`mb-6 ${getNavLinkClass('/settings')} hover:text-orange-500 hover:border-l-4 hover:px-2`}>
+            <NavLink to="/settings">
+              <FaCog className="inline-block mr-2" /> Settings
             </NavLink>
           </li>
           <li className={`mb-10 p-2 hover:text-orange-500 hover:border-l-4 hover:px-2`}>

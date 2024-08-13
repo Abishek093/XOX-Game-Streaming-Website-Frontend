@@ -6,29 +6,43 @@ import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../../Slices/userSlice/userSlice';
 import axiosInstance from '../../../services/userServices/axiosInstance';
 import ReportModal from '../../Common/ReportModal';
+import ConfirmationModal from '../../Common/ConfirmationModal'; // Import your ConfirmationModal component
+import { toast } from 'sonner';
 
 interface PostOptionModalProps {
   user: UserData | GoogleUser | UserDetails | null;
-  postId: string
+  postId: string;
   onClose: () => void;
-  updatePost : (description: string, croppedImage: string|null) => void
-  reportPost : (reason: string) => void
+  updatePost: (description: string, croppedImage: string | null) => void;
+  reportPost: (reason: string) => void;
+  editModal: boolean;
+  setEditModal: React.Dispatch<React.SetStateAction<boolean>>;
+  reportModal: boolean;
+  setReportModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 
-const PostOptionModal: React.FC<PostOptionModalProps> = ({ user, postId, onClose, updatePost, reportPost }) => {
-  const [editModal, setEditModal] = useState(false)
+const PostOptionModal: React.FC<PostOptionModalProps> = ({
+  user,
+  postId,
+  onClose,
+  updatePost,
+  reportPost,
+  editModal,
+  setEditModal,
+  reportModal,
+  setReportModal
+}) => {
   const [post, setPost] = useState<any>(null);
-  const [reportModal, setReportModal] = useState(false)
-  const ownUser = useAppSelector(selectUser)
-
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); 
+  const ownUser = useAppSelector(selectUser);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const response = await axiosInstance.get(`fetch-post/${postId}`);
-        console.log(response)
-        setPost(response.data)
+        console.log(response);
+        setPost(response.data);
       } catch (error) {
         console.error('Error fetching post:', error);
       }
@@ -37,6 +51,16 @@ const PostOptionModal: React.FC<PostOptionModalProps> = ({ user, postId, onClose
     fetchPost();
   }, [postId]);
 
+  const handleDeletePost = async () => {
+    try {
+      await axiosInstance.delete(`delete-post/${postId}`);
+      toast.success("Post deleted successfully")
+      setShowDeleteConfirmation(false)
+      
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={onClose}>
@@ -45,41 +69,46 @@ const PostOptionModal: React.FC<PostOptionModalProps> = ({ user, postId, onClose
         onClick={(e) => e.stopPropagation()}
       >
         <ul className="flex flex-col w-full">
-          {
-            ownUser?.id === user?.id && (
-              <>
-                <li className="flex justify-center items-center p-4 cursor-pointer hover:bg-gray-100" onClick={() => { setEditModal(true) }}>
-                  Edit Post
-                </li>
-              </>
-            )
-          }
-          <li className="flex justify-center items-center p-4 cursor-pointer hover:bg-gray-100 text-red-600" onClick={()=>{setReportModal(true)}}>
+          {ownUser?.username === user?.username && (
+            <>
+              <li className="flex justify-center items-center p-4 cursor-pointer hover:bg-gray-100" onClick={() => { setEditModal(true) }}>
+                Edit Post
+              </li>
+              <li className="flex justify-center items-center p-4 cursor-pointer hover:bg-gray-100" onClick={() => { setShowDeleteConfirmation(true) }}>
+                Delete Post
+              </li>
+            </>
+          )}
+          <li className="flex justify-center items-center p-4 cursor-pointer hover:bg-gray-100 text-red-600" onClick={() => { setReportModal(true) }}>
             <GoReport className='mr-2' />
             Report Post
           </li>
         </ul>
       </div>
-      {
-        editModal && (
-          <DescriptionModal
-            descriptionProps={post.title}
-            isOpen={editModal}
-            croppedImage={post.content}
-            onClose={() => setEditModal(false)}
-            onSubmit={updatePost}
-          />
-        )
-      }
-      {
-        reportModal&&(
-          <ReportModal 
+      {editModal && (
+        <DescriptionModal
+          descriptionProps={post?.title}
+          isOpen={editModal}
+          croppedImage={post?.content}
+          onClose={() => setEditModal(false)}
+          onSubmit={updatePost}
+        />
+      )}
+      {reportModal && (
+        <ReportModal
           isOpen={reportModal}
-          onClose={()=>setReportModal(false)}
+          onClose={() => setReportModal(false)}
           onSubmit={reportPost}
-          />
-        )
-      }
+        />
+      )}
+      {showDeleteConfirmation && (
+        <ConfirmationModal
+          isOpen={showDeleteConfirmation}
+          onClose={() => setShowDeleteConfirmation(false)}
+          onConfirm={handleDeletePost}
+          message="Are you sure you want to delete this post?"
+        />
+      )}
     </div>
   );
 };

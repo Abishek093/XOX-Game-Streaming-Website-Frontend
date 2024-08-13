@@ -37,10 +37,12 @@ const Post: React.FC<PostProps> = ({ post, user }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [optionMenu, setOptionMenu] = useState(false)
+  const [editModal, setEditModal] = useState(false)
+  const [reportModal, setReportModal] = useState(false)
 
   const API_URL = import.meta.env.VITE_USER_API_URL;
   const ownUser = useAppSelector(selectUser);
-
+  console.log('.......post',post)
   useEffect(() => {
     const checkLikeStatus = async () => {
       const PostId = post._id;
@@ -81,6 +83,9 @@ const Post: React.FC<PostProps> = ({ post, user }) => {
       const postId = post._id
       const userId = ownUser?.id;
       const response = await axiosInstance.post(`report-post`,{userId, postId, reason})
+        setReportModal(false)
+        setOptionMenu(false)
+        toast.success('Report addes successfully')
     } catch (error:any) {
       toast.error(error.message)
     }
@@ -100,7 +105,7 @@ const Post: React.FC<PostProps> = ({ post, user }) => {
       </Box>
       <CardMedia
         component="img"
-        sx={{ height: 400, width: 1020, paddingLeft: 9 }}
+        sx={{ height: 400, width: 'auto', margin: '0 auto' }}
         image={post.content}
         title={post.title}
       />
@@ -142,6 +147,10 @@ const Post: React.FC<PostProps> = ({ post, user }) => {
             onClose={() => { setOptionMenu(false) }}
             updatePost = {handleUpdatPost}
             reportPost = {handleReportSubmit}
+            editModal = {editModal}
+            setEditModal = {setEditModal}
+            reportModal = {reportModal}
+            setReportModal = {setReportModal}
           />
         )
       }

@@ -16,11 +16,16 @@
 // export default adminRoutes;
 import AdminLogin from '../pages/admin/AdminLogin';
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import ReportsPage from '../pages/admin/ReportsPage';
 
 const adminRoutes = [
   {
     path: 'dashboard',
     element: <AdminDashboard />,
+  },
+  {
+    path: 'reports',
+    element: <ReportsPage />,
   },
 ];
 

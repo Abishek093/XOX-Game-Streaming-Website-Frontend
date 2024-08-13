@@ -143,3 +143,12 @@ export interface VerifyOtpPayload {
     shape: "round" | "rect";
     aspect: number[];
   }
+
+  export interface ICommunityWithCounts {
+    _id: string;
+    name: string;
+    postCount: number;
+    followerCount: number;
+    image: string
+  }
+  
