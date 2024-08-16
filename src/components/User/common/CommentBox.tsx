@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import axiosInstance from '../../../services/userServices/axiosInstance';
 import { toast } from 'sonner';
 import * as Yup from 'yup';
-import CommentSection from './CommentSection'; // Import the CommentSection component
+import CommentSection from './CommentSection';
 
 const commentSchema = Yup.object().shape({
   comment: Yup.string()
@@ -39,7 +39,6 @@ const CommentBox: React.FC<CommentBoxProps> = ({ postId, userId, onClose }) => {
     const fetchComments = async () => {
       try {
         const comments = await axiosInstance.get(`${API_URL}fetch-comments/${postId}`);
-        console.log('comments',comments)
         setComments(comments.data);
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -66,7 +65,7 @@ const CommentBox: React.FC<CommentBoxProps> = ({ postId, userId, onClose }) => {
       });
       toast('Comment added successfully');
       setValue('');
-      setComments((prevComments) => [response.data, ...prevComments]); // Update comments
+      setComments((prevComments) => [response.data, ...prevComments]);
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         alert(error.message);
@@ -78,17 +77,12 @@ const CommentBox: React.FC<CommentBoxProps> = ({ postId, userId, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div
-        className="relative w-1/2 h-3/4 bg-white rounded-lg flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="relative w-1/2 h-3/4 bg-white rounded-lg flex flex-col" onClick={(e) => e.stopPropagation()}>
         <button className="absolute top-4 right-4 text-black z-10" onClick={onClose}>
           <CloseIcon />
         </button>
         <div className="w-full h-14 border border-gray-400 rounded-md">
-          <div className="flex items-center justify-start text-black font-semibold h-full pl-4">
-            Comments
-          </div>
+          <div className="flex items-center justify-start text-black font-semibold h-full pl-4">Comments</div>
         </div>
         <CommentSection comments={comments} />
         <div className="w-full border-t border-gray-300 mt-auto relative">

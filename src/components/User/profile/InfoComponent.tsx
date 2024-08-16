@@ -1,50 +1,29 @@
+// InfoComponent.tsx
+
 import React from 'react';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { selectUser, updateUser } from '../../../Slices/userSlice/userSlice';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
 
 interface FormValues {
   userId: string;
-  userName: string;
+  username: string;
   displayName: string;
   bio: string;
   profileImage: string;
-  titleImage: string
+  titleImage: string;
 }
+
 interface InfoComponentProps {
-  onProfileUpdate: (username: string) => void;
+  onSubmit: (values: FormValues) => void;
+  initialValues: FormValues;
 }
 
-
-
-const InfoComponent: React.FC<InfoComponentProps> = ({onProfileUpdate}) => {
-  const user = useAppSelector(selectUser);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-  const initialValues: FormValues = {
-    userId: user?.id || '', 
-    username: user?.username || '',
-    displayName: user?.displayName || '',
-    bio: user?.bio || '',
-    profileImage: user?.profileImage || '',
-    titleImage: user?.titleImage || ''
-  };
-
+const InfoComponent: React.FC<InfoComponentProps> = ({ onSubmit, initialValues }) => {
   const validationSchema = Yup.object({
     username: Yup.string().required('Username is required'),
     displayName: Yup.string().required('Display Name is required'),
     bio: Yup.string(),
   });
-
-  const onSubmit = async(values: FormValues) => {
-    const result = await dispatch(updateUser(values));
-    if (updateUser.fulfilled.match(result)) {
-      onProfileUpdate(result.payload.user.username);
-    }
-  };
 
   return (
     <div className="h-full bg-white p-20 flex justify-center items-center">

@@ -8,7 +8,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Communities: React.FC = () => {
   const [communities, setCommunities] = useState<ICommunityWithCounts[]>([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
@@ -22,25 +23,13 @@ const Communities: React.FC = () => {
   }, []);
 
   const handleViewMore = () => {
-    navigate('/community-list')
+    navigate('/community-list');
   };
 
   return (
     <div>
-      <h2 className="text-3xl text-gray-900 mb-4">Our Communities</h2>
-      <div className="grid grid-cols-4 gap-4 h-4/5">
-        {communities.map((community) => (
-          <CommunityCard 
-            key={community._id} // Add key prop for better performance
-            communityId={community._id}
-            name={community.name}
-            posts={community.postCount}
-            members={community.followerCount}
-            imageUrl={community.image || '/default-image.jpg'}
-          />
-        ))}
-      </div>
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-3xl text-gray-900">Our Communities</h2>
         <button
           onClick={handleViewMore}
           className="flex items-center text-orange-500 hover:text-orange-600 font-medium"
@@ -48,6 +37,18 @@ const Communities: React.FC = () => {
           View More
           <FaArrowRight className="ml-2" />
         </button>
+      </div>
+      <div className="grid grid-cols-4 gap-4 h-4/5">
+        {communities.slice(0, 4).map((community) => (
+          <CommunityCard
+            key={community._id}
+            communityId={community._id}
+            name={community.name}
+            posts={community.postCount}
+            members={community.followerCount}
+            imageUrl={community.image || '/default-image.jpg'}
+          />
+        ))}
       </div>
     </div>
   );

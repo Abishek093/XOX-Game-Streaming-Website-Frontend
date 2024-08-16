@@ -3,6 +3,7 @@ import axiosInstance from '../../../services/userServices/axiosInstance';
 import { toast } from 'sonner';
 import ImageUploadModal from '../../Common/ImageUploadModal';
 import { useNavigate } from 'react-router-dom';
+import { useLoading } from '../../../context/LoadingContext';
 
 interface EditCommunityProps {
   community: {
@@ -25,6 +26,7 @@ const EditCommunity: React.FC<EditCommunityProps> = ({ community, onCommunityUpd
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [confirmDeleteName, setConfirmDeleteName] = useState('');
   const navigate = useNavigate()
+  const { setLoading } = useLoading();
 
   const handleImageUpload = (croppedImage: string) => {
     const base64String = croppedImage.split(',')[1];
@@ -33,20 +35,21 @@ const EditCommunity: React.FC<EditCommunityProps> = ({ community, onCommunityUpd
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const updateData: any = {};
-
+  
       if (communityName !== community.name) updateData.name = communityName;
       if (description !== (community.description || '')) updateData.description = description;
       if (postPermission !== community.postPermission) updateData.postPermission = postPermission;
       if (uploadedImage !== community.image) updateData.image = uploadedImage;
-      console.log("updateData",updateData)
       if (Object.keys(updateData).length > 0) {
         const response = await axiosInstance.patch(`update-community/${community._id}`, updateData);
   
         if (response.status === 200) {
           toast.success('Community updated successfully');
           onCommunityUpdate(response.data);
+          navigate(`/community/${community._id}`);
         }
       } else {
         toast.info('No changes to update.');
@@ -54,6 +57,8 @@ const EditCommunity: React.FC<EditCommunityProps> = ({ community, onCommunityUpd
     } catch (error: any) {
       console.error('Failed to update community:', error);
       toast.error('Failed to update community');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,18 +66,18 @@ const EditCommunity: React.FC<EditCommunityProps> = ({ community, onCommunityUpd
     try {
       const normalizedConfirmName = confirmDeleteName.trim();
       const normalizedCommunityName = community.name.trim();
-  
+
       if (normalizedConfirmName !== normalizedCommunityName) {
         toast.error('Community name does not match. Please try again.');
         return;
       }
-  
+
       const response = await axiosInstance.delete(`delete-community/${community._id}`);
-  
-        toast.success('Community deleted successfully');
-        navigate('/community-list')
-        // onCommunityDelete();
-    
+
+      toast.success('Community deleted successfully');
+      navigate('/community-list')
+      // onCommunityDelete();
+
     } catch (error: any) {
       console.error('Failed to delete community:', error);
       toast.error('Failed to delete community');
@@ -198,7 +203,7 @@ const EditCommunity: React.FC<EditCommunityProps> = ({ community, onCommunityUpd
             <div className="mt-6 flex justify-between">
               <button
                 className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                onClick={() => {setDeleteModalOpen(false), setConfirmDeleteName('')}}
+                onClick={() => { setDeleteModalOpen(false), setConfirmDeleteName('') }}
               >
                 Cancel
               </button>

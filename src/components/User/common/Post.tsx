@@ -39,10 +39,11 @@ const Post: React.FC<PostProps> = ({ post, user }) => {
   const [optionMenu, setOptionMenu] = useState(false)
   const [editModal, setEditModal] = useState(false)
   const [reportModal, setReportModal] = useState(false)
+  const ownUser = useAppSelector(selectUser);
+  const userId = ownUser?.id;
 
   const API_URL = import.meta.env.VITE_USER_API_URL;
-  const ownUser = useAppSelector(selectUser);
-  console.log('.......post',post)
+  // console.log('.......post',post)
   useEffect(() => {
     const checkLikeStatus = async () => {
       const PostId = post._id;
@@ -132,10 +133,10 @@ const Post: React.FC<PostProps> = ({ post, user }) => {
           startIcon={<GoCommentDiscussion style={styles.largeIcon} />}
         />
       </CardActions>
-      {isOpen && (
+      {isOpen && userId && (
         <CommentBox
           postId={post._id}
-          userId={ownUser?.id}
+          userId={userId}
           onClose={() => setIsOpen(false)}
         />
       )}

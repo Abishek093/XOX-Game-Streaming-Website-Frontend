@@ -12,7 +12,6 @@ interface OwnProfileProps {
 interface CombinedProps extends ProfileTabsProps, OwnProfileProps {}
 
 const ProfileTabs: React.FC<CombinedProps> = ({ setActiveTab, ownProfile }) => {
-  // Add a log to check ownProfile
   console.log("ownProfile in ProfileTabs component:", ownProfile);
   
   return (

@@ -30,16 +30,15 @@ const Community: React.FC = () => {
   const { communityId } = useParams<{ communityId: string }>();
   const [community, setCommunity] = useState<CommunityData | null>(null);
   const [isAdminView, setIsAdminView] = useState<boolean>(true);
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const owner = useAppSelector(selectUser);
-  const userName = owner.username
+  const userName = owner?.username;
+
   useEffect(() => {
     const fetchCommunityDetails = async () => {
       try {
         const { data } = await axiosInstance.get(`fetch-community/${communityId}`);
-        console.log('data', data)
         setCommunity(data);
       } catch (error: any) {
         toast.error(error.message);
@@ -49,18 +48,24 @@ const Community: React.FC = () => {
     fetchCommunityDetails();
   }, [communityId]);
 
-
-
   const handlePostCreation = async (croppedImage: string, _isProfileImage?: boolean, description?: string) => {
     try {
       const base64String = croppedImage.split(",")[1];
-      const result = await axiosInstance.post(`community-post`, { userName, croppedImage: base64String, description, communityId })
+      const result = await axiosInstance.post(`community-post`, { userName, croppedImage: base64String, description, communityId });
       if (result.status === 200) {
-        toast.success("Post added successfully")
+        toast.success("Post added successfully");
+        // Refresh the community details after a new post is added
+        const { data } = await axiosInstance.get(`fetch-community/${communityId}`);
+        setCommunity(data);
       }
     } catch (error: any) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
+  };
+
+  const handleCommunityUpdate = (updatedCommunity: any) => {
+    setCommunity(updatedCommunity);
+    setIsAdminView(true);  // Switch to posts view after update
   };
 
   return (
@@ -105,63 +110,56 @@ const Community: React.FC = () => {
       {(community?.postPermission === 'anyone' || owner?.id === community?.createdBy) && (
         <button
           className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-16 h-16 bg-gradient-to-r from-pink-500 to-red-600 text-white rounded-full shadow-lg hover:scale-105 transition-all duration-300 transform"
-          onClick={() => { setIsModalOpen(true) }}
+          onClick={() => setIsModalOpen(true)}
         >
           <FaPlus className="text-2xl" />
         </button>
       )}
 
-      {/* Admin or User View */}
       <div className="flex-grow">
         {owner?.id === community?.createdBy ? (
           isAdminView ? (
             <div style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }} className="col-span-3 overflow-y-scroll h-[53vh]">
-              {
-                community?.posts.map((post) => (
-                  <Post
-                    key={post._id}
-                    user={post.author}
-                    post={post}
-                  />
-                ))
-              }
-            </div>
-
-          ) : (
-            <div style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }} className="col-span-3 overflow-y-scroll h-[53vh]">
-              <EditCommunity
-                community={community}
-                onCommunityUpdate={(updatedCommunity) => setCommunity(updatedCommunity)}
-              />
-            </div>
-          )
-        ) : (
-          <div style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }} className="col-span-3 overflow-y-scroll h-[53vh]">
-            {
-              community?.posts.map((post) => (
+              {community?.posts.map((post) => (
                 <Post
                   key={post._id}
                   user={post.author}
                   post={post}
                 />
-              ))
-            }
+              ))}
+            </div>
+          ) : (
+            community && (
+              <div style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }} className="col-span-3 overflow-y-scroll h-[53vh]">
+                <EditCommunity
+                  community={community}
+                  onCommunityUpdate={handleCommunityUpdate}
+                />
+              </div>
+            )
+          )
+        ) : (
+          <div style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }} className="col-span-3 overflow-y-scroll h-[53vh]">
+            {community?.posts.map((post) => (
+              <Post
+                key={post._id}
+                user={post.author}
+                post={post}
+              />
+            ))}
           </div>
         )}
-
       </div>
-      {
-        isModalOpen && (
-          <ImageUploadModal
-            isOpen={isModalOpen}
-            profile={false}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handlePostCreation}
-            isPost={true}
-          // aspectRatio={aspectRatio}
-          />
-        )
-      }
+      
+      {isModalOpen && (
+        <ImageUploadModal
+          isOpen={isModalOpen}
+          profile={false}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handlePostCreation}
+          isPost={true}
+        />
+      )}
     </div>
   );
 };

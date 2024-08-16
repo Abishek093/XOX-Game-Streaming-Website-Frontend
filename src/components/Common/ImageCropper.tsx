@@ -256,7 +256,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
         if (isPost) {
           setIsModalOpen(true);
         } else {
-          console.log(base64String)
+          // console.log(base64String)
           onCropComplete(base64String);
         }
       } else {

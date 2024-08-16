@@ -1,3 +1,47 @@
+export interface UserData {
+  id?: string;
+  username: string;
+  displayName: string;
+  email: string;
+  password: string;
+  birthDate?: string;
+  profileImage?: string;
+  titleImage?: string;
+  bio?:string
+}
+
+export interface GoogleUser {
+  id?: string;
+  username: string;
+  email: string;
+  profileImage: string;
+  displayName?: string; 
+  password?: string; 
+  birthDate?: string; 
+  titleImage?: string;
+  bio?:string
+
+}
+
+export interface UserDetails {
+  id: string;
+  username: string;
+  profileImage: string;
+  titleImage?:string;
+  displayName?: string; 
+  password?: string; 
+  bio?: string
+}
+
+
+export interface ImageUploadValues {
+  username?: string;
+  userId: string;
+  profileImage: string;
+  titleImage: string
+}
+
+
 export interface VerifyOtpPayload {
     otp: string;
     email: string;
@@ -25,43 +69,15 @@ export interface VerifyOtpPayload {
     user: UserData; 
   }
 
-  export interface UserData {
-    id: string;
-    userName: string;
-    displayName: string;
-    email: string;
-    password: string;
-    birthDate: string;
-    profileImage?: string;
-    titleImage?: string;
-  }
+
   export interface UserApiData {
-    userName: string;
+    username: string;
     displayName: string;
     email: string;
     password: string;
     birthDate: string;
   }
 
-  export interface GoogleUser {
-    userId: string;
-    userName: string;
-    email: string;
-    profileImage: string;
-    displayName?: string; 
-    password?: string; 
-    birthDate?: string; 
-    titleImage?: string;
-  }
-
-  export interface UserDetails {
-    userId: string;
-    userName: string;
-    profileImage: string;
-    displayName?: string; 
-    password?: string; 
-  }
-  
   export interface AuthenticatedUser {
     accessToken: string;
     refreshToken: string;
@@ -72,7 +88,7 @@ export interface VerifyOtpPayload {
   export interface GoogleLoginPayload {
     userId: string;  
     email: string;
-    userName: string;
+    username: string;
     profileImage: string;
   }
   
@@ -84,7 +100,7 @@ export interface VerifyOtpPayload {
 
   export interface UpdateUser {
     userId: string;
-    userName: string;
+    username: string;
     displayName: string;
     bio: string;
   }
@@ -96,7 +112,7 @@ export interface VerifyOtpPayload {
   export interface NonSensitiveUserProps {
     userId: string;
     email: string;
-    userName: string;
+    username: string;
     displayName?: string;
     profileImage: string;
     titleImage?: string;
@@ -127,11 +143,6 @@ export interface VerifyOtpPayload {
   }
 
 
-  export interface ImageUploadValues {
-    userId: string;
-    profileImage: string;
-    titleImage: string
-  }
 
   export interface ImageUploadResponse {
     userId: string;

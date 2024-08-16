@@ -4,30 +4,28 @@ import {
   UserDetails,
   GoogleUser,
   UserData,
-  ImageUploadValues,
 } from "../../../interfaces/userInterfaces/apiInterfaces";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  selectUser,
-  updateProfieImage,
-  updateTitleImage,
-} from "../../../Slices/userSlice/userSlice";
 import ImageUploadModal from "../../Common/ImageUploadModal";
 import { toast } from "sonner";
 
 interface UserTitleCardProps {
   user: UserData | GoogleUser | UserDetails | null;
   activeTab: "posts" | "info" | "friends" | "groups";
+  onProfileImageUpload: (croppedImage: string) => void;
+  onTitleImageUpload: (croppedImage: string) => void;
 }
 
-const UserTitleCard: React.FC<UserTitleCardProps> = ({ user, activeTab }) => {
+const UserTitleCard: React.FC<UserTitleCardProps> = ({
+  user,
+  activeTab,
+  onProfileImageUpload,
+  onTitleImageUpload,
+}) => {
   const defaultProfileImage =
     "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1719396828~exp=1719400428~hmac=3992078a184c24bf98ee7b06afbab8f3bad2a1d00f616f2b7a906e219f974cb1&w=740";
   const defaultTitleImage =
     "https://pro-theme.com/html/teamhost/assets/img/heading3.jpg";
 
-  const ownUser = useAppSelector(selectUser);
-  const dispatch = useAppDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProfileImage, setIsProfileImage] = useState(true);
   const [localProfileImage, setLocalProfileImage] = useState(
@@ -46,54 +44,6 @@ const UserTitleCard: React.FC<UserTitleCardProps> = ({ user, activeTab }) => {
     return imageUrl
       ? `${imageUrl}?t=${new Date().getTime()}`
       : defaultProfileImage;
-  };
-
-  const handleProfileImageUpload = async (croppedImage: string) => {
-    try {
-      const base64String = croppedImage.split(",")[1];
-      const values: ImageUploadValues = {
-        userId: ownUser?.id || "",
-        username: ownUser?.username || "",
-        profileImage: base64String,
-        titleImage: "",
-      };
-
-      const response = await dispatch(updateProfieImage(values));
-      if (updateProfieImage.fulfilled.match(response)) {
-        setLocalProfileImage(
-          `${response.payload.profileImageUrl}?t=${new Date().getTime()}`
-        );
-        toast.success("Profile image uploaded successfully.");
-      } else {
-        toast.error("Profile image upload failed.");
-      }
-    } catch (error: any) {
-      toast.error("Image upload failed.");
-    }
-  };
-
-  const handleTitleImageUpload = async (croppedImage: string) => {
-    try {
-      const base64String = croppedImage.split(",")[1];
-      const values: ImageUploadValues = {
-        userId: ownUser?.id || "",
-        username: ownUser?.username || "",
-        profileImage: "",
-        titleImage: base64String,
-      };
-
-      const response = await dispatch(updateTitleImage(values));
-      if (updateTitleImage.fulfilled.match(response)) {
-        setLocalTitleImage(
-          `${response.payload.titleImageUrl}?t=${new Date().getTime()}`
-        );
-        toast.success("Title image uploaded successfully.");
-      } else {
-        toast.error("Title image upload failed.");
-      }
-    } catch (error: any) {
-      toast.error("Image upload failed.");
-    }
   };
 
   return (
@@ -145,7 +95,7 @@ const UserTitleCard: React.FC<UserTitleCardProps> = ({ user, activeTab }) => {
         profile={isProfileImage}
         onClose={() => setIsModalOpen(false)}
         onSubmit={
-          isProfileImage ? handleProfileImageUpload : handleTitleImageUpload
+          isProfileImage ? onProfileImageUpload : onTitleImageUpload
         }
         isPost={false}
       />

@@ -9,6 +9,7 @@ import Friends from '../pages/user/Friends';
 import CommunityList from '../pages/user/CommunityList';
 import Community from '../pages/user/Community';
 import SettingsPage from '../pages/user/SettingsPage';
+import LoadingPage from '../components/Common/LoadingPage';
 
 const userRoutes = [
   {
@@ -34,6 +35,10 @@ const userRoutes = [
   {
     path: 'settings',
     element: <SettingsPage />,
+  },
+  {
+    path: 'loading',
+    element: <LoadingPage />,
   },
 ];
 

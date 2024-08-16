@@ -8,7 +8,7 @@ const Home: React.FC = () => {
   return (
     <div className="flex">
       <div className="flex-1 flex flex-col">
-        <div className="p-4 bg-gray-100 flex-1 p-12">
+        <div className="p-4 bg-gray-100 flex-1">
           <div className="flex mb-24 space-x-4">
             <RecommendedEvents />
             <NewsArchive />
