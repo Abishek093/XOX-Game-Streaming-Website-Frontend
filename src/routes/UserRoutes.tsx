@@ -10,34 +10,39 @@ import CommunityList from '../pages/user/CommunityList';
 import Community from '../pages/user/Community';
 import SettingsPage from '../pages/user/SettingsPage';
 import LoadingPage from '../components/Common/LoadingPage';
+import ChatPage from '../pages/user/ChatPage';
 
 const userRoutes = [
   {
-    path: '/',
+    path: "/",
     element: <Home />,
   },
   {
-    path: '/:username',
+    path: "/:username",
     element: <Profile />,
   },
   {
-    path: 'friends',
+    path: "friends",
     element: <Friends />,
   },
   {
-    path: 'community-list',
+    path: "community-list",
     element: <CommunityList />,
   },
   {
-    path: 'community/:communityId',
+    path: "community/:communityId",
     element: <Community />,
   },
   {
-    path: 'settings',
+    path: "settings",
     element: <SettingsPage />,
   },
   {
-    path: 'loading',
+    path: "chats",
+    element: <ChatPage />,
+  },
+  {
+    path: "loading",
     element: <LoadingPage />,
   },
 ];

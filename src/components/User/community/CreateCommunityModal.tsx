@@ -26,7 +26,7 @@
     };
 
     return (
-      <div className="fixed inset-0 flex justify-center items-center z-50">
+      <div className="fixed inset-0 flex justify-center items-center1 z-50">
         <div className="absolute inset-0 bg-black opacity-50"></div>
 
         <div className="relative bg-white w-11/12 md:w-3/5 lg:w-2/5 p-8 rounded-xl shadow-2xl z-20">

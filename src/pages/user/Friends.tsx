@@ -1,37 +1,41 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import SearchBar from '../../components/User/Friends/SearchBar';
-import FriendRequest from '../../components/User/Friends/FriendRequest';
-import SearchResult from '../../components/User/Friends/SearchResult';
-import debounce from 'lodash.debounce';
-import axiosInstance from '../../services/userServices/axiosInstance';
+import React, { useCallback, useState, useEffect } from "react";
+import SearchBar from "../../components/User/Friends/SearchBar";
+import FriendRequest from "../../components/User/Friends/FriendRequest";
+import SearchResult from "../../components/User/Friends/SearchResult";
+import debounce from "lodash.debounce";
+import axiosInstance from "../../services/userServices/axiosInstance";
 
 interface User {
-  id: string,
-  username: string,
-  displayName: string,
-  profileImage: string
+  id: string;
+  username: string;
+  displayName: string;
+  profileImage: string;
 }
 
 const Friends: React.FC = () => {
   const API_URL = import.meta.env.VITE_USER_API_URL;
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
-  const [lastQuery, setLastQuery] = useState('');
+  const [lastQuery, setLastQuery] = useState("");
 
   const fetchSearchResults = async (query: string) => {
-    if (query.trim() !== '' && query !== lastQuery) {
+    if (query.trim() !== "" && query !== lastQuery) {
       try {
-        const response = await axiosInstance.get(`${API_URL}searchUsers?query=${query}`);
+        const response = await axiosInstance.get(
+          `${API_URL}searchUsers?query=${query}`
+        );
         setSearchResults(response.data.results);
         setLastQuery(query);
       } catch (error) {
-        console.error('Error fetching search results:', error);
+        console.error("Error fetching search results:", error);
       }
     }
   };
 
-  const debouncedSearchResult = useCallback(debounce(fetchSearchResults, 300), [lastQuery]);
+  const debouncedSearchResult = useCallback(debounce(fetchSearchResults, 300), [
+    lastQuery,
+  ]);
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);

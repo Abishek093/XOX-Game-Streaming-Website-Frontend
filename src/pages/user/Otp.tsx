@@ -37,6 +37,17 @@ const OtpPage: React.FC = () => {
       .matches(/^[0-9]{4}$/, 'OTP must be exactly 4 digits')
   });
 
+
+    useEffect(() => {
+    console.log('Location state:', location.state); 
+    console.log('Email:', email);
+    console.log('Is Signup:', isSignup);
+    console.log('Is Password Reset:', isPasswordReset);
+
+    // Rest of the useEffect code
+  }, [email, isSignup, isPasswordReset]);
+
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>, index: number, setFieldValue: (field: string, value: any) => void) => {
     const { value } = e.target;
     if (/^[0-9]$/.test(value)) {
@@ -98,17 +109,20 @@ const OtpPage: React.FC = () => {
   
   const handleSubmit = async (otp: string) => {
     try {      
+      
       if (isSignup) {
+        console.log('Signup', email, otp)
         const response = await dispatch(verifyOtp({ email, otp })).unwrap();
         toast.success("Signup successfull. Login to continue!")
         navigate('/login');
       } else if (isPasswordReset) {
+        console.log('Password', email, otp)
         const response = await dispatch(verifyResetOtp({ email, otp })).unwrap();
         toast.success("Otp verified successfully")
         navigate('/reset-password', { state: { email: response.email, isPasswordReset: true, isSignup: false } }); 
       }
     } catch (error: any) {
-      toast.error(error)
+      toast.error(error.message || 'An error occured')
     }
   };
 

@@ -16,7 +16,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ comments }) => {
       {comments.map((comment) => (
         <div key={comment._id} className="mb-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
+            <div className="flex items-center"> 
               <img
                 src={comment.userDetails?.profileImage || 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'}
                 alt="User Avatar"

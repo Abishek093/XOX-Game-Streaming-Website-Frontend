@@ -86,6 +86,7 @@ const LoadingPage: React.FC = () => {
             strokeDashoffset={800 - (progress / 20 * 800)}
           />
         </svg>
+        <p className='p-2'>Loading...</p>
       </div>
     </div>
   );
