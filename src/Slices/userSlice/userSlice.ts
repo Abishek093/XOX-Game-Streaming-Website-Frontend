@@ -44,46 +44,46 @@ export const verifyOtp = createAsyncThunk<VerifyOtpResponse, VerifyOtpPayload>(
   }
 );
 
-export const loginUser = createAsyncThunk<LoginResponse, LoginPayload, { rejectValue: { message: string } }>(
-  'user/loginUser',
-  async (loginDetails, { rejectWithValue }) => {
-    try {
-      const response = await login(loginDetails);
-      Cookies.set('UserRefreshToken', response.refreshToken, {
-        sameSite: 'strict',
-        expires: 7,
-      });
-      Cookies.set('UserAccessToken', response.accessToken, {
-        sameSite: 'strict',
-        expires: 1 / 96, 
-      });
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message ? { message: error.message } : { message: 'Failed to login' });
-    }
-  }
-);
+    export const loginUser = createAsyncThunk<LoginResponse, LoginPayload, { rejectValue: { message: string } }>(
+      'user/loginUser',
+      async (loginDetails, { rejectWithValue }) => {
+        try {
+          const response = await login(loginDetails);
+          Cookies.set('UserRefreshToken', response.refreshToken, {
+            sameSite: 'strict',
+            expires: 7,
+          });
+          Cookies.set('UserAccessToken', response.accessToken, {
+            sameSite: 'strict',
+            expires: 1 / 96, 
+          });
+          return response;
+        } catch (error: any) {
+          return rejectWithValue(error.message ? { message: error.message } : { message: 'Failed to login' });
+        }
+      }
+    );
 
 
-export const googleAuth = createAsyncThunk<AuthenticatedUser, GoogleUser>(
-  'user/googleAuth',
-  async (googleAuthDetails, { rejectWithValue }) => {
-    try {
-      const response = await googleAuthApi(googleAuthDetails);
-      Cookies.set('UserRefreshToken', response.refreshToken, {
-        sameSite: 'strict',
-        expires: 7, // 7 days
-      });
-      Cookies.set('UserAccessToken', response.accessToken, {
-        sameSite: 'strict',
-        expires: 1 / 96, // 15 minutes
-      });
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message ? { message: error.message } : { message: 'Failed to login' });
-    }
-  }
-);
+    export const googleAuth = createAsyncThunk<AuthenticatedUser, GoogleUser>(
+      'user/googleAuth',
+      async (googleAuthDetails, { rejectWithValue }) => {
+        try {
+          const response = await googleAuthApi(googleAuthDetails);
+          Cookies.set('UserRefreshToken', response.refreshToken, {
+            sameSite: 'strict',
+            expires: 7, // 7 days
+          });
+          Cookies.set('UserAccessToken', response.accessToken, {
+            sameSite: 'strict',
+            expires: 1 / 96, // 15 minutes
+          });
+          return response;
+        } catch (error: any) {
+          return rejectWithValue(error.message ? { message: error.message } : { message: 'Failed to login' });
+        }
+      }
+    );
 
 
 

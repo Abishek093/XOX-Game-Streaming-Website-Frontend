@@ -291,6 +291,10 @@ const Profile: React.FC = () => {
     [navigate, username, fetchUserProfile]
   );
 
+  const handleRemovePost = (postId: string) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+  };
+
   const onSubmit = async (values: FormValues) => {
     const result = await dispatch(updateUser(values));
     if (updateUser.fulfilled.match(result)) {
@@ -373,13 +377,13 @@ const Profile: React.FC = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "posts":
-        return <PostFeed user={user} setPosts={setPosts} posts={posts} />;
+        return <PostFeed user={user} setPosts={setPosts} posts={posts} removePost={handleRemovePost} />;
       case "info":
         return (
           <InfoComponent onSubmit={onSubmit} initialValues={initialValues} />
         );
       default:
-        return <PostFeed user={user} setPosts={setPosts} posts={posts} />;
+        return <PostFeed user={user} setPosts={setPosts} posts={posts} removePost={handleRemovePost}/>;
     }
   };
 

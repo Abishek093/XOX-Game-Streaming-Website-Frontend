@@ -3,6 +3,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ImageCropper from "./ImageCropper";
 import imageCompression from "browser-image-compression";
 import { toast } from "sonner";
+import { useLoading } from '../../context/LoadingContext';
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   const [aspectRatio, setAspectRatio] = useState<number>(
     profile ? 1 / 1 : 16 / 9
   );
+  const { setLoading } = useLoading();
 
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +62,8 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
   };
 
   const handleFile = async (file: File) => {
+    setLoading(true);
+
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
 
     if (!allowedTypes.includes(file.type)) {
@@ -81,6 +85,8 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
     } catch (error) {
       console.error("Error compressing image:", error);
       toast.error("There was an error processing the image. Please try again.");
+    }finally{
+      setLoading(false);
     }
   };
 

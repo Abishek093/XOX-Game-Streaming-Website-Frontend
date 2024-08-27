@@ -11,6 +11,7 @@ import { FaEdit, FaListAlt, FaPlus } from 'react-icons/fa';
 import ImageUploadModal from '../../components/Common/ImageUploadModal';
 import Post from '../../components/User/common/Post';
 import EditCommunity from '../../components/User/community/EditCommunity';
+import { useLoading } from '../../context/LoadingContext';
 
 
 interface CommunityData {
@@ -19,7 +20,7 @@ interface CommunityData {
   description?: string;
   createdBy: string;
   followers: string[];
-  posts: any[]; // Adjust the type based on the structure of post data
+  posts: any[]; 
   postPermission: 'admin' | 'anyone';
   image?: string;
   createdAt: string;
@@ -31,7 +32,8 @@ const Community: React.FC = () => {
   const [community, setCommunity] = useState<CommunityData | null>(null);
   const [isAdminView, setIsAdminView] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const { setLoading } = useLoading();
+
   const owner = useAppSelector(selectUser);
   const userName = owner?.username;
 
@@ -49,6 +51,7 @@ const Community: React.FC = () => {
   }, [communityId]);
 
   const handlePostCreation = async (croppedImage: string, _isProfileImage?: boolean, description?: string) => {
+    setLoading(true);
     try {
       const base64String = croppedImage.split(",")[1];
       const result = await axiosInstance.post(`community-post`, { userName, croppedImage: base64String, description, communityId });
@@ -60,13 +63,29 @@ const Community: React.FC = () => {
       }
     } catch (error: any) {
       toast.error(error.message);
+    }finally{
+      setLoading(false);
     }
   };
 
   const handleCommunityUpdate = (updatedCommunity: any) => {
     setCommunity(updatedCommunity);
-    setIsAdminView(true);  // Switch to posts view after update
+    setIsAdminView(true); 
   };
+
+  const handleRemovePost = (postId: string) => {
+    setCommunity((prevCommunity) => {
+      if (prevCommunity) {
+        return {
+          ...prevCommunity,
+          posts: prevCommunity.posts.filter((post) => post._id !== postId),
+        };
+      }
+      return prevCommunity;
+    });
+    toast.success("Post removed successfully");
+  };
+
 
   return (
     <div className="relative p-4 h-[91vh] flex flex-col">
@@ -125,6 +144,7 @@ const Community: React.FC = () => {
                   key={post._id}
                   user={post.author}
                   post={post}
+                  removePost={handleRemovePost}
                 />
               ))}
             </div>
@@ -145,6 +165,7 @@ const Community: React.FC = () => {
                 key={post._id}
                 user={post.author}
                 post={post}
+                removePost={handleRemovePost}
               />
             ))}
           </div>

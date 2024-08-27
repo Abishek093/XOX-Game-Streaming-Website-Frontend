@@ -26,19 +26,19 @@
     };
 
     return (
-      <div className="fixed inset-0 flex justify-center items-center1 z-50">
-        <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="fixed inset-0 flex justify-center items-center z-50">
+      <div className="absolute inset-0 bg-black opacity-50"></div>
 
-        <div className="relative bg-white w-11/12 md:w-3/5 lg:w-2/5 p-8 rounded-xl shadow-2xl z-20">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-800">Create a Community</h2>
-            <button
-              className="text-gray-600 hover:text-gray-800 text-3xl"
-              onClick={onClose}
-            >
-              &times;
-            </button>
-          </div>
+      <div className="relative bg-white w-11/12 md:w-3/5 lg:w-2/5 p-8 rounded-xl shadow-2xl z-20">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">Create a Community</h2>
+          <button
+            className="text-gray-600 hover:text-gray-800 text-3xl"
+            onClick={onClose}
+          >
+            &times;
+          </button>
+        </div>
 
           {error && <p className="text-red-500 mb-4">{error}</p>}
 

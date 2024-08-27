@@ -314,8 +314,9 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         description,
       });
       const newPost = result.data
-      setPosts((prevPosts) => [...prevPosts, newPost]);
+      setPosts((prevPosts) => [newPost, ...prevPosts]);
 
+      
       if (result.status === 200) {
         toast.success("Post added successfully");
       }

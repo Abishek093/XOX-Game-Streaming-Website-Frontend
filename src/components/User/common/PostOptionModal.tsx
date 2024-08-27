@@ -8,6 +8,7 @@ import axiosInstance from '../../../services/userServices/axiosInstance';
 import ReportModal from '../../Common/ReportModal';
 import ConfirmationModal from '../../Common/ConfirmationModal'; // Import your ConfirmationModal component
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface PostOptionModalProps {
   user: UserData | GoogleUser | UserDetails | null;
@@ -19,6 +20,7 @@ interface PostOptionModalProps {
   setEditModal: React.Dispatch<React.SetStateAction<boolean>>;
   reportModal: boolean;
   setReportModal: React.Dispatch<React.SetStateAction<boolean>>;
+  removePost: (postId: string) => void;
 }
 
 
@@ -31,12 +33,13 @@ const PostOptionModal: React.FC<PostOptionModalProps> = ({
   editModal,
   setEditModal,
   reportModal,
-  setReportModal
+  setReportModal,
+  removePost
 }) => {
   const [post, setPost] = useState<any>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); 
   const ownUser = useAppSelector(selectUser);
-
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -56,11 +59,35 @@ const PostOptionModal: React.FC<PostOptionModalProps> = ({
       await axiosInstance.delete(`delete-post/${postId}`);
       toast.success("Post deleted successfully")
       setShowDeleteConfirmation(false)
-      
+      onClose()     
+      removePost(postId);
     } catch (error) {
       console.error('Error deleting post:', error);
     }
   };
+  // const handleDeletePost = async () => {
+  //   try {
+  //     await axiosInstance.delete(`delete-post/${postId}`);
+  //     toast.success("Post deleted successfully");
+  
+  //     setShowDeleteConfirmation(false);
+  //     onClose();
+  
+  //     // Chain navigation after the state updates
+  //     axiosInstance.delete(`delete-post/${postId}`)
+  //       .then(() => {
+  //         // Ensure the state has updated and then navigate
+  //         navigate(`/${ownUser?.username}`);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error during navigation:", error);
+  //       });
+  //   } catch (error) {
+  //     console.error("Error deleting post:", error);
+  //     toast.error("Failed to delete the post");
+  //   }
+  // };
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={onClose}>
