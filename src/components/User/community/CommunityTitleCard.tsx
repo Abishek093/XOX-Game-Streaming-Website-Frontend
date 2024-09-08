@@ -5,7 +5,7 @@ interface CommunityTitleCardProps {
   name?: string;
   description?: string;
   postCount?: number;
-  followersCount?: number;
+  followersCount?: number;  
   isFollowing?: boolean;
   onFollowToggle?: () => void;
 }

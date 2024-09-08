@@ -1,29 +1,29 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+// import React, { createContext, useContext, useEffect, useState } from 'react';
+// import { io, Socket } from 'socket.io-client';
 
-const SOCKET_URL = 'http://localhost:5000';
+// const SOCKET_URL = 'http://localhost:5000';
 
-const SocketContext = createContext<Socket | null>(null);
+// const SocketContext = createContext<Socket | null>(null);
 
-export const useSocket = () => {
-    return useContext(SocketContext);
-};
+// export const useSocket = () => {
+//     return useContext(SocketContext);
+// };
 
-export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [socket, setSocket] = useState<Socket | null>(null);
+// export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+//     const [socket, setSocket] = useState<Socket | null>(null);
 
-    useEffect(() => {
-        const newSocket = io(SOCKET_URL);
-        setSocket(newSocket);
+//     useEffect(() => {
+//         const newSocket = io(SOCKET_URL);
+//         setSocket(newSocket);
 
-        return () => {
-            newSocket.close();
-        };
-    }, []);
+//         return () => {
+//             newSocket.close();
+//         };
+//     }, []);
 
-    return (
-        <SocketContext.Provider value={socket}>
-            {children}
-        </SocketContext.Provider>
-    );
-};
+//     return (
+//         <SocketContext.Provider value={socket}>
+//             {children}
+//         </SocketContext.Provider>
+//     );
+// };

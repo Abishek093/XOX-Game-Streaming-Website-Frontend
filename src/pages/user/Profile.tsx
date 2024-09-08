@@ -1,18 +1,30 @@
-// import React, { useEffect, useState, useCallback } from 'react';
-// import UserTitleCard from '../../components/User/profile/UserTitleCard';
-// import UserProfileCard from '../../components/User/profile/UserProfileCard';
-// import PostFeed from '../../components/User/common/PostFeed';
-// import ProfileTabs from '../../components/User/profile/ProfileTabs';
-// import InfoComponent from '../../components/User/profile/InfoComponent';
-// import { useNavigate, useParams } from 'react-router-dom';
-// import { useAppSelector, useAppDispatch } from '../../store/hooks';
-// import { selectUser, updateUser, updateProfieImage, updateTitleImage } from '../../Slices/userSlice/userSlice';
-// import { GoogleUser, UserData, UserDetails, ImageUploadValues } from '../../interfaces/userInterfaces/apiInterfaces';
-// import axiosInstance from '../../services/userServices/axiosInstance';
-// import { toast } from 'sonner';
-// import { useLoading } from '../../context/LoadingContext';
 
-// type Tab = 'posts' | 'info' | 'friends' | 'groups';
+// import React, { useEffect, useState, useCallback } from "react";
+// import UserTitleCard from "../../components/User/profile/UserTitleCard";
+// import UserProfileCard from "../../components/User/profile/UserProfileCard";
+// import PostFeed from "../../components/User/common/PostFeed";
+// import ProfileTabs from "../../components/User/profile/ProfileTabs";
+// import InfoComponent from "../../components/User/profile/InfoComponent";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { useAppSelector, useAppDispatch } from "../../store/hooks";
+// import {
+//   selectUser,
+//   updateUser,
+//   updateProfieImage,
+//   updateTitleImage,
+// } from "../../Slices/userSlice/userSlice";
+// import {
+//   GoogleUser,
+//   UserData,
+//   UserDetails,
+//   ImageUploadValues,
+// } from "../../interfaces/userInterfaces/apiInterfaces";
+// import axiosInstance from "../../services/userServices/axiosInstance";
+// import { toast } from "sonner";
+// import { useLoading } from "../../context/LoadingContext";
+// import { Skeleton, Box } from "@mui/material";
+
+// type Tab = "posts" | "info" | "friends" | "groups";
 
 // interface FormValues {
 //   userId: string;
@@ -24,31 +36,36 @@
 // }
 
 // const Profile: React.FC = () => {
-//   const [activeTab, setActiveTab] = useState<Tab>('posts');
-//   const [user, setUser] = useState<UserData | GoogleUser | UserDetails | null>(null);
+//   const [activeTab, setActiveTab] = useState<Tab>("posts");
+//   const [user, setUser] = useState<UserData | GoogleUser | UserDetails | null>(
+//     null
+//   );
 //   const [ownProfile, setOwnProfile] = useState<boolean>(false);
 //   const { username } = useParams<{ username: string }>();
 //   const loggedInUser = useAppSelector(selectUser);
-//   const { setLoading } = useLoading(); 
+//   const { setLoading } = useLoading();
 //   const navigate = useNavigate();
 //   const dispatch = useAppDispatch();
+//   const [posts, setPosts] = useState<any[]>([]);
 
-
-//   const fetchUserProfile = useCallback(async (username: string) => {
-//     try {
-//       const isOwnProfile = loggedInUser?.username === username;
-//       if (isOwnProfile) {
-//         setUser(loggedInUser);
-//         setOwnProfile(true);
-//       } else {
-//         const { data } = await axiosInstance.get(`/users/${username}`);
-//         setUser(data);
-//         setOwnProfile(false);
+//   const fetchUserProfile = useCallback(
+//     async (username: string) => {
+//       try {
+//         const isOwnProfile = loggedInUser?.username === username;
+//         if (isOwnProfile) {
+//           setUser(loggedInUser);
+//           setOwnProfile(true);
+//         } else {
+//           const { data } = await axiosInstance.get(`/users/${username}`);
+//           setUser(data);
+//           setOwnProfile(false);
+//         }
+//       } catch (error) {
+//         console.error("Error fetching user data", error);
 //       }
-//     } catch (error) {
-//       console.error("Error fetching user data", error);
-//     }
-//   }, [loggedInUser]);
+//     },
+//     [loggedInUser]
+//   );
 
 //   useEffect(() => {
 //     if (username) {
@@ -56,27 +73,29 @@
 //     }
 //   }, [username, fetchUserProfile]);
 
-//   const handleProfileUpdate = useCallback((newUsername: string) => {
-//     setLoading(true)
-//     setOwnProfile(true);  
+//   const handleProfileUpdate = useCallback(
+//     (newUsername: string) => {
+//       setLoading(true);
+//       setOwnProfile(true);
 
-//     try {
-//       if (newUsername !== username) {
-//         fetchUserProfile(newUsername).then(() => {
-//           navigate(`/${newUsername}`);
-//         });
+//       try {
+//         if (newUsername !== username) {
+//           fetchUserProfile(newUsername).then(() => {
+//             navigate(`/${newUsername}`);
+//           });
+//         }
+//       } catch (error: any) {
+//         toast.error(error.message);
+//       } finally {
+//         setLoading(false);
 //       }
-//     } catch (error:any) {
-//       toast.error(error.message)
-//     }finally{
-//       setLoading(false)
-//     }
+//     },
+//     [navigate, username, fetchUserProfile]
+//   );
 
-//   }, [navigate, username, fetchUserProfile]);
-
-
-
-
+//   const handleRemovePost = (postId: string) => {
+//     setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+//   };
 
 //   const onSubmit = async (values: FormValues) => {
 //     const result = await dispatch(updateUser(values));
@@ -85,24 +104,26 @@
 //     }
 //   };
 
-//   const getInitialValues = (user: UserData | GoogleUser | UserDetails | null): FormValues => {
+//   const getInitialValues = (
+//     user: UserData | GoogleUser | UserDetails | null
+//   ): FormValues => {
 //     if (!user) {
 //       return {
-//         userId: '',
-//         username: '',
-//         displayName: '',
-//         bio: '',
-//         profileImage: '',
-//         titleImage: ''
+//         userId: "",
+//         username: "",
+//         displayName: "",
+//         bio: "",
+//         profileImage: "",
+//         titleImage: "",
 //       };
 //     }
 //     return {
-//       userId: user.id || '',
+//       userId: user.id || "",
 //       username: user.username,
-//       displayName: user.displayName || '',
-//       bio: user.bio || '',
-//       profileImage: user.profileImage || '',
-//       titleImage: user.titleImage || ''
+//       displayName: user.displayName || "",
+//       bio: user.bio || "",
+//       profileImage: user.profileImage || "",
+//       titleImage: user.titleImage || "",
 //     };
 //   };
 
@@ -120,7 +141,11 @@
 
 //       const response = await dispatch(updateProfieImage(values));
 //       if (updateProfieImage.fulfilled.match(response)) {
-//         setUser((prevUser) => prevUser ? { ...prevUser, profileImage: response.payload.profileImageUrl } : prevUser);
+//         setUser((prevUser) =>
+//           prevUser
+//             ? { ...prevUser, profileImage: response.payload.profileImageUrl }
+//             : prevUser
+//         );
 //         navigate(`/${username}`);
 //       } else {
 //         toast.error("Profile image upload failed.");
@@ -153,15 +178,31 @@
 
 //   const renderContent = () => {
 //     switch (activeTab) {
-//       case 'posts':
-//         return <PostFeed user={user} />;
-//       case 'info':
-//         return <InfoComponent onSubmit={onSubmit} initialValues={initialValues} />;
+//       case "posts":
+//         return <PostFeed user={user} setPosts={setPosts} posts={posts} removePost={handleRemovePost} />;
+//       case "info":
+//         return (
+//           <InfoComponent onSubmit={onSubmit} initialValues={initialValues} />
+//         );
 //       default:
-//         return <PostFeed user={user} />;
+//         return <PostFeed user={user} setPosts={setPosts} posts={posts} removePost={handleRemovePost} />;
 //     }
 //   };
 
+//   const renderSkeleton = () => (
+//     <div className="flex-1 flex flex-col p-4">
+//       <Skeleton variant="rectangular" width="100%" height={200} />
+//       <div className="flex gap-4 mt-4">
+//         <Skeleton variant="circular" width={100} height={100} />
+//         <div className="flex-1">
+//           <Skeleton variant="text" width="60%" height={40} />
+//           <Skeleton variant="text" width="80%" height={20} />
+//           <Skeleton variant="text" width="40%" height={20} />
+//         </div>
+//       </div>
+//       <Skeleton variant="text" width="100%" height={60} className="mt-4" />
+//     </div>
+//   );
 
 //   return (
 //     <div className="flex bg-gray-100">
@@ -178,25 +219,37 @@
 //                 />
 //               </div>
 //               <div className="col-span-3">
-//                 <ProfileTabs setActiveTab={setActiveTab} ownProfile={ownProfile} />
+//                 <ProfileTabs
+//                   setActiveTab={setActiveTab}
+//                   ownProfile={ownProfile}
+//                 />
 //               </div>
-//               <div style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }} className="col-span-3 overflow-y-scroll h-[53vh]">
+//               <div
+//                 style={{
+//                   scrollbarWidth: "none",
+//                   WebkitOverflowScrolling: "touch",
+//                 }}
+//                 className="col-span-3 overflow-y-scroll h-[53vh]"
+//               >
 //                 {renderContent()}
 //               </div>
 //             </div>
 //           </div>
 //           <div className="w-1/3">
-//             <UserProfileCard user={user} ownProfile={ownProfile} />
+//             <UserProfileCard user={user} ownProfile={ownProfile} setPosts={setPosts} posts={posts} />
 //           </div>
 //         </>
 //       ) : (
-//         <div>Loading user data...</div>
+//         renderSkeleton()
 //       )}
 //     </div>
 //   );
 // };
 
 // export default Profile;
+
+
+
 import React, { useEffect, useState, useCallback } from "react";
 import UserTitleCard from "../../components/User/profile/UserTitleCard";
 import UserProfileCard from "../../components/User/profile/UserProfileCard";
@@ -245,6 +298,9 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [posts, setPosts] = useState<any[]>([]);
+  const [followStatus, setFollowStatus] = useState<
+    "Rejected" | "NotFollowing" | "Requested" | "Accepted"
+  >("NotFollowing");
 
   const fetchUserProfile = useCallback(
     async (username: string) => {
@@ -288,7 +344,7 @@ const Profile: React.FC = () => {
         setLoading(false);
       }
     },
-    [navigate, username, fetchUserProfile]
+    [navigate, username, fetchUserProfile, setLoading]
   );
 
   const handleRemovePost = (postId: string) => {
@@ -383,7 +439,7 @@ const Profile: React.FC = () => {
           <InfoComponent onSubmit={onSubmit} initialValues={initialValues} />
         );
       default:
-        return <PostFeed user={user} setPosts={setPosts} posts={posts} removePost={handleRemovePost}/>;
+        return <PostFeed user={user} setPosts={setPosts} posts={posts} removePost={handleRemovePost} />;
     }
   };
 
@@ -434,7 +490,14 @@ const Profile: React.FC = () => {
             </div>
           </div>
           <div className="w-1/3">
-            <UserProfileCard user={user} ownProfile={ownProfile} setPosts={setPosts} />
+            <UserProfileCard 
+              user={user} 
+              ownProfile={ownProfile} 
+              setPosts={setPosts} 
+              posts={posts}
+              followStatus={followStatus}
+              setFollowStatus={setFollowStatus}
+            />
           </div>
         </>
       ) : (

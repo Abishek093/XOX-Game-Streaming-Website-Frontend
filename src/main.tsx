@@ -7,7 +7,6 @@ import App from './App';
 import './index.css';
 import { Toaster } from 'sonner';
 import { LoadingProvider } from './context/LoadingContext';
-import { SocketProvider } from './context/socketContext';
 
 
 const container = document.getElementById('root');
@@ -15,7 +14,6 @@ const root = ReactDOM.createRoot(container!);
 
 root.render(
   <React.StrictMode>
-    <SocketProvider>
     <LoadingProvider>
       <Toaster position="top-center" richColors />
       <Provider store={store}>
@@ -24,6 +22,5 @@ root.render(
         </PersistGate>
       </Provider>
     </LoadingProvider>
-    </SocketProvider>
   </React.StrictMode>
 );
