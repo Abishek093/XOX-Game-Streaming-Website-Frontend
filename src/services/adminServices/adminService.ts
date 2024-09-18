@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {AdminLoginPayload, AdminLoginResponse} from '../../interfaces/adminInterfaces/adminInterface';
 
-const API_URL = 'http://localhost:5000/admin/';
+const API_URL = 'http://localhost:3000/admin/';
 
 
 

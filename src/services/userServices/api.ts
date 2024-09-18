@@ -2,7 +2,7 @@ import { UserData, UserApiData, VerifyOtpPayload, VerifyOtpResponse, LoginPayloa
 import axiosInstance from './axiosInstance';
 
 
-const API_URL = 'http://localhost:5000/api/';
+const API_URL = 'http://localhost:3000/api/';
 
 export const signup = async (userDetails: UserApiData): Promise<UserData> => {
   try {

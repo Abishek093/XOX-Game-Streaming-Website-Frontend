@@ -201,4 +201,5 @@ export interface IMessage {
   repliedTo?: string; 
   createdAt?: Date;
   updatedAt?: Date;
+  seen?: boolean;
 }

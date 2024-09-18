@@ -1,130 +1,151 @@
-  import React, { useEffect, useState } from 'react';
-  import { useParams } from 'react-router-dom';
-  import { useAppSelector } from '../../store/hooks';
-  import { selectUser } from '../../Slices/userSlice/userSlice';
-  import axiosInstance from '../../services/userServices/axiosInstance';
-  import { toast } from 'sonner';
-  import CommunityTitleCard from '../../components/User/community/CommunityTitleCard';
-  // import CommunityPosts from '../../components/User/community/CommunityPosts';
-  // import EditCommunity from '../../components/User/community/EditCommunity';
-  import { FaEdit, FaListAlt, FaPlus } from 'react-icons/fa';
-  import ImageUploadModal from '../../components/Common/ImageUploadModal';
-  import Post from '../../components/User/common/Post';
-  import EditCommunity from '../../components/User/community/EditCommunity';
-  import { useLoading } from '../../context/LoadingContext';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAppSelector } from '../../store/hooks';
+import { selectUser } from '../../Slices/userSlice/userSlice';
+import axiosInstance from '../../services/userServices/axiosInstance';
+import { toast } from 'sonner';
+import CommunityTitleCard from '../../components/User/community/CommunityTitleCard';
+import { FaEdit, FaListAlt, FaPlus } from 'react-icons/fa';
+import ImageUploadModal from '../../components/Common/ImageUploadModal';
+import Post from '../../components/User/common/Post';
+import EditCommunity from '../../components/User/community/EditCommunity';
+import { useLoading } from '../../context/LoadingContext';
 
+interface CommunityData {
+  _id: string;
+  name: string;
+  description?: string;
+  createdBy: string;
+  followers: string[];
+  posts: any[]; 
+  postPermission: 'admin' | 'anyone';
+  image?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
-  interface CommunityData {
-    _id: string;
-    name: string;
-    description?: string;
-    createdBy: string;
-    followers: string[];
-    posts: any[]; 
-    postPermission: 'admin' | 'anyone';
-    image?: string;
-    createdAt: string;
-    updatedAt: string;
+const Community: React.FC = () => {
+  const { communityId } = useParams<{ communityId: string }>();
+  const [community, setCommunity] = useState<CommunityData | null>(null);
+  const [isAdminView, setIsAdminView] = useState<boolean>(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { setLoading } = useLoading();
+  const [followStatus, setFollowStatus] = useState<boolean>(false);
+  const [postCount, setPostCount] = useState<number>(0);
+  const [followersCount, setFollowersCount] = useState<number>(0)
+
+  const owner = useAppSelector(selectUser);
+  const userName = owner?.username;
+
+  useEffect(() => {
+    const fetchCommunityDetails = async () => {
+      try {
+        const { data } = await axiosInstance.get(`fetch-community/${communityId}`);
+        console.log(data)
+        setCommunity(data);
+        setPostCount(data.posts.length);
+        checkFollowStatus();
+        fetchFollowersCount()
+      } catch (error: any) {
+        toast.error(error.message);
+      }
+    };
+
+    fetchCommunityDetails();
+  }, [communityId, owner?.id]);
+
+  const fetchFollowersCount = async()=>{
+    const response = await axiosInstance.get(`fetchFollowers/${communityId}`)
+    console.log("response😍",response)
+    setFollowersCount(response.data.length)
   }
 
-  const Community: React.FC = () => {
-    const { communityId } = useParams<{ communityId: string }>();
-    const [community, setCommunity] = useState<CommunityData | null>(null);
-    const [isAdminView, setIsAdminView] = useState<boolean>(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const { setLoading } = useLoading();
-    const [followStatus, setFollowStatus] = useState<
-      "Rejected" | "NotFollowing" | "Requested" | "Accepted"
-    >("NotFollowing");
 
-    const owner = useAppSelector(selectUser);
-    const userName = owner?.username;
+  const checkFollowStatus = async () => {
+    try {
+      const { data } = await axiosInstance.get(`/follower/${owner?.id}/community/${communityId}`);
+      setFollowStatus(data.isFollowing);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
-    useEffect(() => {
-      const fetchCommunityDetails = async () => {
-        try {
-          const { data } = await axiosInstance.get(`fetch-community/${communityId}`);
-          setCommunity(data);
-        } catch (error: any) {
-          toast.error(error.message);
-        }
-      };
+  const handleFollow = async () => {
+    try {
+      await axiosInstance.post(`/follow/${communityId}/user/${owner?.id}`);
+      setFollowStatus(true);
+      toast.success("Successfully followed the community");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
-      fetchCommunityDetails();
-    }, [communityId]);
+  const handleUnfollow = async () => {
+    try {
+      await axiosInstance.delete(`/unfollow/${communityId}/user/${owner?.id}`);
+      setFollowStatus(false);
+      toast.success("Successfully unfollowed the community");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
-    const handleFollow = async () => {
-      try {
-        const follow = await axiosInstance.post(
-          `/follower/${owner?.id}/user/${communityId}`
-        );
-        if (follow.data.status === "Requested") {
-          setFollowStatus("Requested");
-        } else if (follow.data.status === "Accepted") {
-          setFollowStatus("Accepted");
-        }
-      } catch (error: any) {
-        toast.error(error.message);
+  const handlePostCreation = async (croppedImage: string, _isProfileImage?: boolean, description?: string) => {
+    setLoading(true);
+    try {
+      const base64String = croppedImage.split(",")[1];
+      const result = await axiosInstance.post(`community-post`, { userName, croppedImage: base64String, description, communityId });
+      if (result.status === 200) {
+        toast.success("Post added successfully");
+        const { data } = await axiosInstance.get(`fetch-community/${communityId}`);
+        setCommunity(data);
+        setPostCount(data.posts.length);
       }
-    };
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleUnfollow = async () => {
-      try {
-        await axiosInstance.delete(`/follower/${owner?.id}/user/${communityId}`);
-        setFollowStatus("NotFollowing");
-      } catch (error: any) {
-        toast.error(error.message);
-      }
-    };
+  const handleCommunityUpdate = (updatedCommunity: any) => {
+    setCommunity(updatedCommunity);
+    setIsAdminView(true); 
+  };
 
-    const handlePostCreation = async (croppedImage: string, _isProfileImage?: boolean, description?: string) => {
-      setLoading(true);
-      try {
-        const base64String = croppedImage.split(",")[1];
-        const result = await axiosInstance.post(`community-post`, { userName, croppedImage: base64String, description, communityId });
-        if (result.status === 200) {
-          toast.success("Post added successfully");
-          // Refresh the community details after a new post is added
-          const { data } = await axiosInstance.get(`fetch-community/${communityId}`);
-          setCommunity(data);
-        }
-      } catch (error: any) {
-        toast.error(error.message);
-      }finally{
-        setLoading(false);
-      }
-    };
-
-    const handleCommunityUpdate = (updatedCommunity: any) => {
-      setCommunity(updatedCommunity);
-      setIsAdminView(true); 
-    };
-
-    const handleRemovePost = (postId: string) => {
+  const handleRemovePost = async (postId: string) => {
+    try {
+      await axiosInstance.delete(`/community-post/${postId}`);
       setCommunity((prevCommunity) => {
         if (prevCommunity) {
+          const updatedPosts = prevCommunity.posts.filter((post) => post._id !== postId);
+          setPostCount(updatedPosts.length);
           return {
             ...prevCommunity,
-            posts: prevCommunity.posts.filter((post) => post._id !== postId),
+            posts: updatedPosts,
           };
         }
         return prevCommunity;
       });
       toast.success("Post removed successfully");
-    };
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
-
-    return (
-      <div className="relative p-4 h-[91vh] flex flex-col">
-        <div className="flex-shrink-0">
-          <CommunityTitleCard
-            image={community?.image}
-            name={community?.name}
-            description={community?.description}
-            postCount={community?.posts.length}
-            followersCount={community?.followers.length}
-          />
-        </div>
+  return (
+    <div className="relative p-4 h-[91vh] flex flex-col">
+      <div className="flex-shrink-0">
+        <CommunityTitleCard
+          image={community?.image}
+          name={community?.name}
+          description={community?.description}
+          postCount={postCount}
+          followersCount={followersCount}
+          isFollowing={followStatus}
+          onFollowToggle={followStatus ? handleUnfollow : handleFollow}
+        />
+      </div>
 
         {/* Admin Control Bar */}
         {owner?.id === community?.createdBy && (

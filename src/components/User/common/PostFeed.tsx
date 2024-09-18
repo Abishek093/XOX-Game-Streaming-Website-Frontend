@@ -77,7 +77,7 @@ interface PostFeedProps {
 const PostFeed: React.FC<PostFeedProps> = ({ user, posts, setPosts, removePost }) => {
 
   useEffect(() => {
-    const socket = io('http://localhost:5000'); 
+    const socket = io('http://localhost:3000'); 
 
     socket.on('post-liked', (data) => {
       const updatedPosts = posts.map(post => 

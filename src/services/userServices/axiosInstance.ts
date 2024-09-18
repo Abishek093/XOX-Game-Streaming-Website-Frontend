@@ -3,7 +3,7 @@
 // import { refreshAccessToken } from "./api";
 
 // const axiosInstance = axios.create({
-//     baseURL: 'http://localhost:500http://localhost:5000/api/'
+//     baseURL: 'http://localhost:500http://localhost:3000/api/'
 // })
 
 
@@ -59,7 +59,7 @@
 // import { refreshAccessToken } from "./api";
 
 // const axiosInstance = axios.create({
-//     baseURL: 'http://localhost:5000/api/' 
+//     baseURL: 'http://localhost:3000/api/' 
 // });
 
 // axiosInstance.interceptors.request.use(
@@ -118,7 +118,7 @@ import { refreshAccessToken } from './api';
 import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api/',
+  baseURL: 'http://localhost:3000/api/',
 });
 
 axiosInstance.interceptors.request.use(

@@ -1,10 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaTachometerAlt, FaFlag } from 'react-icons/fa';
+import { FaTachometerAlt, FaFlag, FaAd } from 'react-icons/fa';
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
-
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -28,6 +27,15 @@ const Sidebar: React.FC = () => {
             >
               <FaFlag />
               <span>Reports</span>
+            </Link>
+          </li>
+          <li className="mb-6">
+            <Link
+              to="/admin/sponsored-posts"
+              className={`text-lg flex items-center space-x-3 transition-all duration-200 hover:text-gray-300 ${isActive('/admin/sponsored-posts') ? 'text-blue-500' : ''}`}
+            >
+              <FaAd />
+              <span>Sponsored Posts</span>
             </Link>
           </li>
         </ul>

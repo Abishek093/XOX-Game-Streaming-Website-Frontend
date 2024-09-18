@@ -17,6 +17,7 @@
 import AdminLogin from '../pages/admin/AdminLogin';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import ReportsPage from '../pages/admin/ReportsPage';
+import SponsoredPosts from '../pages/admin/SponsoredPosts';
 
 const adminRoutes = [
   {
@@ -27,6 +28,10 @@ const adminRoutes = [
     path: 'reports',
     element: <ReportsPage />,
   },
+  {
+    path: 'sponsored-posts',
+    element: <SponsoredPosts />
+  }
 ];
 
 const adminPublicRoutes = [

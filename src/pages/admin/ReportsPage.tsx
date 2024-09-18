@@ -15,7 +15,7 @@ const ReportsPage: React.FC = () => {
   useEffect(() => {
     const handleReportFetch = async () => {
       try {
-        const fetchReport = await axios.get('http://localhost:5000/admin/fetch-reports');
+        const fetchReport = await axios.get('http://localhost:3000/admin/fetch-reports');
         setReports(fetchReport.data.results);
         console.log(fetchReport);
       } catch (error) {
@@ -51,14 +51,14 @@ const ReportsPage: React.FC = () => {
 
     // Placeholder function for ignoring the report
     console.log("Ignoring report for post:", selectedReport.post._id);
-    const response = axios.patch(`http://localhost:5000/admin/resolve-report/${selectedReport.post._id}`)
+    const response = axios.patch(`http://localhost:3000/admin/resolve-report/${selectedReport.post._id}`)
     closeConfirmModal();
     closeModal();
   };
 
   const handleDelete = async () => {
     try {
-      const response = await axios.patch(`http://localhost:5000/admin/delete-post/${selectedReport.post._id}`);
+      const response = await axios.patch(`http://localhost:3000/admin/delete-post/${selectedReport.post._id}`);
       console.log('Delete response:', response.data); 
       closeConfirmModal();
       closeModal();

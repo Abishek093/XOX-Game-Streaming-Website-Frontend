@@ -7,6 +7,7 @@ import App from './App';
 import './index.css';
 import { Toaster } from 'sonner';
 import { LoadingProvider } from './context/LoadingContext';
+import SocketProvider from './services/userServices/socketProvider';
 
 
 const container = document.getElementById('root');
@@ -14,13 +15,15 @@ const root = ReactDOM.createRoot(container!);
 
 root.render(
   <React.StrictMode>
-    <LoadingProvider>
-      <Toaster position="top-center" richColors />
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </Provider>
-    </LoadingProvider>
+    <SocketProvider>
+      <LoadingProvider>
+        <Toaster position="top-center" richColors />
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <App />
+          </PersistGate>
+        </Provider>
+      </LoadingProvider>
+    </SocketProvider>
   </React.StrictMode>
 );

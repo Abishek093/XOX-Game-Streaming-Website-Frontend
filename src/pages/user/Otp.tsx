@@ -128,7 +128,7 @@ const OtpPage: React.FC = () => {
 
   const handleResendOtp = async () => {
     try {
-      await axios.post('http://localhost:5000/api/resend-otp', { email });
+      await axios.post('http://localhost:3000/api/resend-otp', { email });
       setTimer(30);
       setIsResendDisabled(true);
       setIsVerifyDisabled(false); // Enable the verify button

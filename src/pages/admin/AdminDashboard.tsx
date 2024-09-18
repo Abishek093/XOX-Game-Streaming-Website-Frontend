@@ -14,7 +14,7 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/users');
+        const response = await axios.get('http://localhost:3000/admin/users');
         console.log(response.data);
         
         setUsers(response.data);
@@ -28,7 +28,7 @@ const AdminDashboard: React.FC = () => {
 
   const toggleBlockUser = async (userId: string) => {
     try {
-      const response = await axios.patch(`http://localhost:5000/admin/users/${userId}/block`);
+      const response = await axios.patch(`http://localhost:3000/admin/users/${userId}/block`);
       setUsers(users.map(user => user._id === userId ? { ...user, isBlocked: response.data.isBlocked } : user));
     } catch (error) {
       console.error('Failed to update user status:', error);
